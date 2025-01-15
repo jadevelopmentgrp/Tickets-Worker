@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/interaction"
 	"strconv"
 	"time"

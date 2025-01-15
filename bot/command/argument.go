@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/TicketsBot/worker/i18n"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction"
 )
 

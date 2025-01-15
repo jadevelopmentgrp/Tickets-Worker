@@ -1,11 +1,12 @@
 package registry
 
 import (
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/rxdn/gdl/objects/interaction"
 	"time"
+
+	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
+	"github.com/rxdn/gdl/objects/interaction"
 )
 
 type Properties struct {

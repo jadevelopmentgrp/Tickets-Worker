@@ -2,17 +2,18 @@ package listeners
 
 import (
 	"context"
+	"time"
+
 	"github.com/TicketsBot/common/sentry"
 	"github.com/TicketsBot/database"
 	"github.com/TicketsBot/worker"
-	cmdcontext "github.com/TicketsBot/worker/bot/command/context"
-	"github.com/TicketsBot/worker/bot/constants"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/errorcontext"
-	"github.com/TicketsBot/worker/bot/logic"
-	"github.com/TicketsBot/worker/bot/utils"
+	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/gateway/payloads/events"
-	"time"
 )
 
 func OnThreadUpdate(worker *worker.Context, e events.ThreadUpdate) {

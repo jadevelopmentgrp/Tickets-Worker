@@ -3,12 +3,13 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/rxdn/gdl/objects/channel/embed"
 	"strings"
+
+	"github.com/TicketsBot/common/sentry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/rxdn/gdl/objects/channel/embed"
 )
 
 // each msg is

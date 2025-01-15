@@ -3,10 +3,11 @@ package logic
 import (
 	"context"
 	"fmt"
+
 	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/channel"
 	"github.com/rxdn/gdl/permission"
 	"github.com/rxdn/gdl/rest"

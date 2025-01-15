@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/worker/bot/button/registry"
-	"github.com/TicketsBot/worker/bot/button/registry/matcher"
-	"github.com/TicketsBot/worker/bot/command/context"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/i18n"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"strings"
 	"time"
 )

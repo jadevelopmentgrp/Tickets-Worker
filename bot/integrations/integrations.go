@@ -3,8 +3,8 @@ package integrations
 import (
 	"github.com/TicketsBot/common/integrations/bloxlink"
 	"github.com/TicketsBot/common/webproxy"
-	"github.com/TicketsBot/worker/bot/redis"
-	"github.com/TicketsBot/worker/config"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
+	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 )
 
 var (

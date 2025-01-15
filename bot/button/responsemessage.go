@@ -2,12 +2,13 @@ package button
 
 import (
 	"context"
+	"time"
+
 	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/interaction"
 	"github.com/rxdn/gdl/rest"
-	"time"
 )
 
 type ResponseMessage struct {

@@ -2,19 +2,19 @@ package statistics
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/utils"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/getsentry/sentry-go"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/channel/embed"
 	"github.com/rxdn/gdl/objects/interaction"
 	"golang.org/x/sync/errgroup"
-	"strconv"
-	"time"
 )
 
 type StatsUserCommand struct {
@@ -42,11 +42,6 @@ func (c StatsUserCommand) GetExecutor() interface{} {
 }
 
 func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
-	span := sentry.StartTransaction(ctx, "/stats user")
-	span.SetTag("guild", strconv.FormatUint(ctx.GuildId(), 10))
-	span.SetTag("user", strconv.FormatUint(userId, 10))
-	defer span.Finish()
-
 	member, err := ctx.Worker().GetGuildMember(ctx.GuildId(), userId)
 	if err != nil {
 		ctx.HandleError(err)
@@ -70,18 +65,12 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 
 		// load isBlacklisted
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "Is Blacklisted")
-			defer span.Finish()
-
 			isBlacklisted, err = utils.IsBlacklisted(ctx, ctx.GuildId(), userId, member, permLevel)
 			return
 		})
 
 		// load totalTickets
 		group.Go(func() error {
-			span := sentry.StartSpan(span.Context(), "GetAllByUser")
-			defer span.Finish()
-
 			tickets, err := dbclient.Client.Tickets.GetAllByUser(ctx, ctx.GuildId(), userId)
 			totalTickets = len(tickets)
 			return err
@@ -89,9 +78,6 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 
 		// load openTickets
 		group.Go(func() error {
-			span := sentry.StartSpan(span.Context(), "GetOpenByUser")
-			defer span.Finish()
-
 			tickets, err := dbclient.Client.Tickets.GetOpenByUser(ctx, ctx.GuildId(), userId)
 			openTickets = len(tickets)
 			return err
@@ -99,9 +85,6 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 
 		// load ticketLimit
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "TicketLimit")
-			defer span.Finish()
-
 			ticketLimit, err = dbclient.Client.TicketLimit.Get(ctx, ctx.GuildId())
 			return
 		})
@@ -110,8 +93,6 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 			ctx.HandleError(err)
 			return
 		}
-
-		span := sentry.StartSpan(span.Context(), "Reply")
 
 		msgEmbed := embed.NewEmbed().
 			SetTitle("Statistics").
@@ -124,7 +105,6 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 			AddField("Open Tickets", fmt.Sprintf("%d / %d", openTickets, ticketLimit), true)
 
 		_, _ = ctx.ReplyWith(command.NewEphemeralEmbedMessageResponse(msgEmbed))
-		span.Finish()
 	} else { // Support rep stats
 		group, _ := errgroup.WithContext(ctx)
 
@@ -132,17 +112,11 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 		var feedbackCount int
 
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetAverageClaimedBy")
-			defer span.Finish()
-
 			feedbackRating, err = dbclient.Client.ServiceRatings.GetAverageClaimedBy(ctx, ctx.GuildId(), userId)
 			return
 		})
 
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetCountClaimedBy")
-			defer span.Finish()
-
 			feedbackCount, err = dbclient.Client.ServiceRatings.GetCountClaimedBy(ctx, ctx.GuildId(), userId)
 			return
 		})
@@ -154,108 +128,72 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 
 		// totalAR
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetAverageAllTimeUser")
-			defer span.Finish()
-
 			totalAR, err = dbclient.Client.FirstResponseTime.GetAverageAllTimeUser(ctx, ctx.GuildId(), userId)
 			return
 		})
 
 		// monthlyAR
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetAverageUser")
-			defer span.Finish()
-
 			monthlyAR, err = dbclient.Client.FirstResponseTime.GetAverageUser(ctx, ctx.GuildId(), userId, time.Hour*24*28)
 			return
 		})
 
 		// weeklyAR
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetAverageUser")
-			defer span.Finish()
-
 			weeklyAR, err = dbclient.Client.FirstResponseTime.GetAverageUser(ctx, ctx.GuildId(), userId, time.Hour*24*7)
 			return
 		})
 
 		// weeklyAnswered
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetParticipatedCountInterval")
-			defer span.Finish()
-
 			weeklyAnsweredTickets, err = dbclient.Client.Participants.GetParticipatedCountInterval(ctx, ctx.GuildId(), userId, time.Hour*24*7)
 			return
 		})
 
 		// monthlyAnswered
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetParticipatedCountInterval")
-			defer span.Finish()
-
 			monthlyAnsweredTickets, err = dbclient.Client.Participants.GetParticipatedCountInterval(ctx, ctx.GuildId(), userId, time.Hour*24*28)
 			return
 		})
 
 		// totalAnswered
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetParticipatedCount")
-			defer span.Finish()
-
 			totalAnsweredTickets, err = dbclient.Client.Participants.GetParticipatedCount(ctx, ctx.GuildId(), userId)
 			return
 		})
 
 		// weeklyTotal
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetTotalTicketCountInterval")
-			defer span.Finish()
-
 			weeklyTotalTickets, err = dbclient.Client.Tickets.GetTotalTicketCountInterval(ctx, ctx.GuildId(), time.Hour*24*7)
 			return
 		})
 
 		// monthlyTotal
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetTotalTicketCountInterval")
-			defer span.Finish()
-
 			monthlyTotalTickets, err = dbclient.Client.Tickets.GetTotalTicketCountInterval(ctx, ctx.GuildId(), time.Hour*24*28)
 			return
 		})
 
 		// totalTotal
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetTotalTicketCount")
-			defer span.Finish()
-
 			totalTotalTickets, err = dbclient.Client.Tickets.GetTotalTicketCount(ctx, ctx.GuildId())
 			return
 		})
 
 		// weeklyClaimed
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetClaimedSinceCount_Weekly")
-			defer span.Finish()
-
 			weeklyClaimedTickets, err = dbclient.Client.TicketClaims.GetClaimedSinceCount(ctx, ctx.GuildId(), userId, time.Hour*24*7)
 			return
 		})
 
 		// monthlyClaimed
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetClaimedSinceCount_Monthly")
-			defer span.Finish()
-
 			monthlyClaimedTickets, err = dbclient.Client.TicketClaims.GetClaimedSinceCount(ctx, ctx.GuildId(), userId, time.Hour*24*28)
 			return
 		})
 
 		// totalClaimed
 		group.Go(func() (err error) {
-			span := sentry.StartSpan(span.Context(), "GetClaimedCount")
-			defer span.Finish()
-
 			totalClaimedTickets, err = dbclient.Client.TicketClaims.GetClaimedCount(ctx, ctx.GuildId(), userId)
 			return
 		})
@@ -271,8 +209,6 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 		} else {
 			permissionLevel = "Support"
 		}
-
-		span := sentry.StartSpan(span.Context(), "Reply")
 
 		msgEmbed := embed.NewEmbed().
 			SetTitle("Statistics").
@@ -292,6 +228,5 @@ func (StatsUserCommand) Execute(ctx registry.CommandContext, userId uint64) {
 			AddField("Claimed Tickets (Total)", strconv.Itoa(totalClaimedTickets), true)
 
 		_, _ = ctx.ReplyWith(command.NewEphemeralEmbedMessageResponse(msgEmbed))
-		span.Finish()
 	}
 }

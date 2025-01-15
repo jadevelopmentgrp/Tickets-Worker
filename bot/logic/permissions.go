@@ -3,15 +3,16 @@ package logic
 import (
 	"context"
 	"errors"
+	"sync"
+
 	"github.com/TicketsBot/common/collections"
 	"github.com/TicketsBot/database"
 	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/member"
 	"github.com/rxdn/gdl/rest/request"
 	"golang.org/x/sync/errgroup"
-	"sync"
 )
 
 func HasPermissionForTicket(ctx context.Context, worker *worker.Context, ticket database.Ticket, userId uint64) (bool, error) {

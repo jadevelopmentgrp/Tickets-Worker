@@ -4,26 +4,24 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/blacklist"
-	"github.com/TicketsBot/worker/bot/command"
-	cmdcontext "github.com/TicketsBot/worker/bot/command/context"
-	"github.com/TicketsBot/worker/bot/command/impl/tags"
-	cmdregistry "github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/metrics/prometheus"
-	"github.com/TicketsBot/worker/bot/metrics/statsd"
-	"github.com/TicketsBot/worker/bot/utils"
-	"github.com/TicketsBot/worker/config"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/rxdn/gdl/objects/interaction"
-	"golang.org/x/sync/errgroup"
 	"runtime/debug"
 	"time"
+
+	"github.com/TicketsBot/common/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/tags"
+	cmdregistry "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/prometheus"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
+	"github.com/rxdn/gdl/objects/interaction"
+	"golang.org/x/sync/errgroup"
 )
 
 // TODO: Command not found messages
@@ -48,7 +46,6 @@ func executeCommand(
 		// If a registered command is not found, check for a tag alias
 		tag, exists, err := dbclient.Client.Tag.GetByApplicationCommandId(ctx, data.GuildId.Value, data.Data.Id)
 		if err != nil {
-			sentry.Error(err)
 			return false, err
 		}
 
@@ -97,21 +94,6 @@ func executeCommand(
 		// Parallelise queries
 		group, _ := errgroup.WithContext(lookupCtx)
 
-		// Get premium level
-		var premiumLevel = premium.None
-		group.Go(func() error {
-			tier, err := utils.PremiumClient.GetTierByGuildId(lookupCtx, data.GuildId.Value, true, worker.Token, worker.RateLimiter)
-			if err != nil {
-				// TODO: Better error handling
-				// But do not hard fail, as Patreon / premium proxy may be experiencing some issues
-				sentry.Error(err)
-			} else {
-				premiumLevel = tier
-			}
-
-			return nil
-		})
-
 		// Get permission level
 		var permLevel = permission.Everyone
 		group.Go(func() error {
@@ -125,21 +107,17 @@ func executeCommand(
 		})
 
 		if err := group.Wait(); err != nil {
-			errorId := sentry.Error(err)
+			fmt.Print(err)
 			responseCh <- interaction.ApplicationCommandCallbackData{
-				Content: fmt.Sprintf("An error occurred while processing this request (Error ID `%s`)", errorId),
+				Content: fmt.Sprintf("An error occurred while processing this request."),
 			}
-			return
-		}
-
-		if premiumLevel == premium.None && config.Conf.PremiumOnly {
 			return
 		}
 
 		ctx, cancel := context.WithTimeout(ctx, properties.Timeout)
 		defer cancel()
 
-		interactionContext := cmdcontext.NewSlashCommandContext(ctx, worker, data, premiumLevel, responseCh)
+		interactionContext := cmdcontext.NewSlashCommandContext(ctx, worker, data, 0, responseCh)
 
 		// Check if the guild is globally blacklisted
 		if blacklist.IsGuildBlacklisted(data.GuildId.Value) {
@@ -159,11 +137,6 @@ func executeCommand(
 
 		if properties.HelperOnly && !utils.IsBotHelper(interactionContext.UserId()) {
 			interactionContext.Reply(customisation.Red, i18n.Error, i18n.MessageNoPermission)
-			return
-		}
-
-		if properties.PremiumOnly && premiumLevel == premium.None {
-			interactionContext.Reply(customisation.Red, i18n.TitlePremiumOnly, i18n.MessagePremium)
 			return
 		}
 
@@ -191,7 +164,7 @@ func executeCommand(
 			if errors.Is(err, ErrArgumentNotFound) {
 				if worker.IsWhitelabel {
 					content := `This command registration is outdated. Please ask the server administrators to visit the whitelabel dashboard and press "Create Slash Commands" again.`
-					embed := utils.BuildEmbedRaw(customisation.GetDefaultColour(customisation.Red), "Outdated Command", content, nil, premium.Whitelabel)
+					embed := utils.BuildEmbedRaw(customisation.GetDefaultColour(customisation.Red), "Outdated Command", content, nil, 1)
 					res := command.NewEphemeralEmbedMessageResponse(embed)
 					responseCh <- res.IntoApplicationCommandData()
 

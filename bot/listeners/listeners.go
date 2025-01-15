@@ -6,8 +6,7 @@ package listeners
 import (
     "encoding/json"
     "fmt"
-    "github.com/TicketsBot/worker"
-    "github.com/getsentry/sentry-go"
+    "github.com/jadevelopmentgrp/Tickets-Worker"
     "github.com/rxdn/gdl/gateway/payloads"
     "github.com/rxdn/gdl/gateway/payloads/events"
 )
@@ -63,7 +62,7 @@ var (
     WebhooksUpdateListeners = []func(*worker.Context, events.WebhooksUpdate){}
 )
 
-func HandleEvent(c *worker.Context, span *sentry.Span, payload payloads.Payload) error {
+func HandleEvent(c *worker.Context, payload payloads.Payload) error {
     if payload.Opcode != 0 { // Dispatch
         return fmt.Errorf("HandleEvent called with non-dispatch op-code: %d", payload.Opcode)
     }

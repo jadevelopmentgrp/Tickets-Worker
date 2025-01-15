@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/TicketsBot/worker/bot/button/registry"
-	"github.com/TicketsBot/worker/bot/button/registry/matcher"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/context"
-	"github.com/TicketsBot/worker/bot/logic"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
 	"github.com/rxdn/gdl/objects/channel/embed"
 	"github.com/rxdn/gdl/objects/guild/emoji"
 	"github.com/rxdn/gdl/objects/interaction/component"

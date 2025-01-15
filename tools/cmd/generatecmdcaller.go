@@ -3,18 +3,19 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/manager"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/utils"
-	"github.com/rxdn/gdl/objects/channel"
-	"github.com/rxdn/gdl/objects/interaction"
 	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/manager"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
+	"github.com/rxdn/gdl/objects/channel"
+	"github.com/rxdn/gdl/objects/interaction"
 )
 
 type executorData struct {

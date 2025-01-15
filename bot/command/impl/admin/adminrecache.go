@@ -2,15 +2,16 @@ package admin
 
 import (
 	"errors"
-	"github.com/TicketsBot/common/permission"
-	w "github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/rxdn/gdl/objects/interaction"
 	"strconv"
 	"time"
+
+	"github.com/TicketsBot/common/permission"
+	w "github.com/jadevelopmentgrp/Tickets-Worker"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
+	"github.com/rxdn/gdl/objects/interaction"
 )
 
 type AdminRecacheCommand struct {

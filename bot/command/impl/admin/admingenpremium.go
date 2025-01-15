@@ -3,17 +3,18 @@ package admin
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/google/uuid"
-	"github.com/rxdn/gdl/objects/interaction"
 	"strings"
 	"time"
+
+	"github.com/TicketsBot/common/permission"
+	"github.com/TicketsBot/common/sentry"
+	"github.com/google/uuid"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
+	"github.com/rxdn/gdl/objects/interaction"
 )
 
 type AdminGenPremiumCommand struct {

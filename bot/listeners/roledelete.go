@@ -2,13 +2,14 @@ package listeners
 
 import (
 	"context"
+	"time"
+
 	"github.com/TicketsBot/common/sentry"
 	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/errorcontext"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
 	"github.com/rxdn/gdl/gateway/payloads/events"
 	"golang.org/x/sync/errgroup"
-	"time"
 )
 
 func OnRoleDelete(worker *worker.Context, e events.GuildRoleDelete) {

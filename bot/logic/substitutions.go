@@ -2,10 +2,11 @@ package logic
 
 import (
 	"fmt"
-	"github.com/TicketsBot/worker/bot/command/registry"
+	"strings"
+
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/rxdn/gdl/objects/member"
 	"github.com/rxdn/gdl/objects/user"
-	"strings"
 )
 
 type SubstitutionFunc func(user user.User, member member.Member) string

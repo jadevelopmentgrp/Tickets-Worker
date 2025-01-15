@@ -2,6 +2,7 @@ package button
 
 import (
 	"errors"
+
 	"github.com/TicketsBot/worker"
 	"github.com/rxdn/gdl/objects/interaction"
 )

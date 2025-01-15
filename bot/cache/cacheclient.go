@@ -3,14 +3,15 @@ package cache
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/worker/config"
+	"time"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/log/logrusadapter"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 	"github.com/rxdn/gdl/cache"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
-	"time"
 )
 
 var Client *cache.PgCache

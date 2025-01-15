@@ -2,14 +2,15 @@ package admin
 
 import (
 	"fmt"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/worker/bot/command"
-	"github.com/TicketsBot/worker/bot/command/registry"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/i18n"
-	"github.com/rxdn/gdl/objects/interaction"
 	"strconv"
 	"time"
+
+	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
+	"github.com/rxdn/gdl/objects/interaction"
 )
 
 type AdminGetOwnerCommand struct {

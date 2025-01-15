@@ -3,19 +3,20 @@ package listeners
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/TicketsBot/common/sentry"
 	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/blacklist"
-	"github.com/TicketsBot/worker/bot/customisation"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/metrics/statsd"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
 	"github.com/rxdn/gdl/gateway/payloads/events"
 	"github.com/rxdn/gdl/objects/auditlog"
 	"github.com/rxdn/gdl/objects/channel/embed"
 	"github.com/rxdn/gdl/objects/guild"
 	"github.com/rxdn/gdl/permission"
 	"github.com/rxdn/gdl/rest"
-	"time"
 )
 
 // Fires when we receive a guild

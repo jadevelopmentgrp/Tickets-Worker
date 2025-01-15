@@ -3,20 +3,21 @@ package listeners
 import (
 	"context"
 	"errors"
+	"strconv"
+	"time"
+
 	"github.com/TicketsBot/common/chatrelay"
 	"github.com/TicketsBot/common/model"
 	"github.com/TicketsBot/common/premium"
 	"github.com/TicketsBot/common/sentry"
 	"github.com/TicketsBot/database"
 	"github.com/TicketsBot/worker"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/metrics/prometheus"
-	"github.com/TicketsBot/worker/bot/metrics/statsd"
-	"github.com/TicketsBot/worker/bot/redis"
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/prometheus"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/gateway/payloads/events"
-	"strconv"
-	"time"
 )
 
 // proxy messages to web UI + set last message id

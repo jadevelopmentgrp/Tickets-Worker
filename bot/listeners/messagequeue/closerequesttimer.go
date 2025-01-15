@@ -2,17 +2,18 @@ package messagequeue
 
 import (
 	"context"
+
 	"github.com/TicketsBot/common/closerequest"
 	"github.com/TicketsBot/common/sentry"
 	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker/bot/cache"
-	cmdcontext "github.com/TicketsBot/worker/bot/command/context"
-	"github.com/TicketsBot/worker/bot/constants"
-	"github.com/TicketsBot/worker/bot/dbclient"
-	"github.com/TicketsBot/worker/bot/logic"
-	"github.com/TicketsBot/worker/bot/metrics/statsd"
-	"github.com/TicketsBot/worker/bot/redis"
-	"github.com/TicketsBot/worker/bot/utils"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
+	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 )
 
 func ListenCloseRequestTimer() {

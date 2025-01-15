@@ -2,7 +2,7 @@ package blacklist
 
 import (
 	"context"
-	"github.com/TicketsBot/worker/bot/dbclient"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"go.uber.org/zap"
 	"sync"
 	"time"

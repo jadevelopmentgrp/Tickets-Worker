@@ -3,14 +3,15 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	_ "github.com/rxdn/gdl/gateway/payloads/events"
 	"go/types"
-	"golang.org/x/tools/go/packages"
 	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
 	"unicode"
+
+	_ "github.com/rxdn/gdl/gateway/payloads/events"
+	"golang.org/x/tools/go/packages"
 )
 
 const (
