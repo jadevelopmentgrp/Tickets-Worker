@@ -62,7 +62,7 @@ func SendWelcomeMessage(
 		}
 
 		if cmd.PremiumTier() == premium.None {
-			formAnswersEmbed.SetFooter("Powered by ticketsbot.net", "https://ticketsbot.net/assets/img/logo.png")
+			formAnswersEmbed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 		}
 
 		embeds = append(embeds, formAnswersEmbed)
@@ -134,7 +134,7 @@ func BuildWelcomeMessageEmbed(
 		// Replace variables
 		welcomeMessage = DoPlaceholderSubstitutions(ctx, welcomeMessage, cmd.Worker(), ticket, additionalPlaceholders)
 
-		return utils.BuildEmbedRaw(cmd.GetColour(customisation.Green), subject, welcomeMessage, nil, cmd.PremiumTier()), nil
+		return utils.BuildEmbedRaw(cmd.GetColour(customisation.Green), subject, welcomeMessage, nil), nil
 	} else {
 		data, err := dbclient.Client.Embeds.GetEmbed(ctx, *panel.WelcomeMessageEmbed)
 		if err != nil {
@@ -578,7 +578,7 @@ func BuildCustomEmbed(
 	}
 
 	if branding {
-		e.SetFooter("Powered by ticketsbot.net", "https://ticketsbot.net/assets/img/logo.png")
+		e.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 	} else if customEmbed.FooterText != nil {
 		e.SetFooter(*customEmbed.FooterText, utils.ValueOrZero(customEmbed.FooterIconUrl))
 	}

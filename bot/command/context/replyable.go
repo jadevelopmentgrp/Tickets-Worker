@@ -59,7 +59,7 @@ func (r *Replyable) buildEmbed(colour customisation.Colour, title, content i18n.
 }
 
 func (r *Replyable) buildEmbedRaw(colour customisation.Colour, title, content string, fields ...embed.EmbedField) *embed.Embed {
-	return utils.BuildEmbedRaw(r.GetColour(colour), title, content, fields, r.ctx.PremiumTier())
+	return utils.BuildEmbedRaw(r.GetColour(colour), title, content, fields)
 }
 
 func (r *Replyable) Reply(colour customisation.Colour, title, content i18n.MessageId, format ...interface{}) {

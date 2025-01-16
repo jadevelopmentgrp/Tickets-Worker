@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 
-	"github.com/TicketsBot/common/premium"
 	"github.com/TicketsBot/worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -30,15 +29,13 @@ func BuildEmbed(
 		msgEmbed.AddField(field.Name, field.Value, field.Inline)
 	}
 
-	if ctx.PremiumTier() == premium.None {
-		msgEmbed.SetFooter("Powered by ticketsbot.net", "https://ticketsbot.net/assets/img/logo.png")
-	}
+	msgEmbed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 
 	return msgEmbed
 }
 
 func BuildEmbedRaw(
-	colourHex int, title, content string, fields []embed.EmbedField, tier premium.PremiumTier,
+	colourHex int, title, content string, fields []embed.EmbedField,
 ) *embed.Embed {
 	msgEmbed := embed.NewEmbed().
 		SetColor(colourHex).
@@ -49,30 +46,19 @@ func BuildEmbedRaw(
 		msgEmbed.AddField(field.Name, field.Value, field.Inline)
 	}
 
-	if tier == premium.None {
-		msgEmbed.SetFooter("Powered by ticketsbot.net", "https://ticketsbot.net/assets/img/logo.png")
-	}
+	msgEmbed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 
 	return msgEmbed
 }
 
 func GetColourForGuild(ctx context.Context, worker *worker.Context, colour customisation.Colour, guildId uint64) (int, error) {
-	premiumTier, err := PremiumClient.GetTierByGuildId(ctx, guildId, true, worker.Token, worker.RateLimiter)
+	colourCode, ok, err := dbclient.Client.CustomColours.Get(ctx, guildId, colour.Int16())
 	if err != nil {
 		return 0, err
-	}
-
-	if premiumTier > premium.None {
-		colourCode, ok, err := dbclient.Client.CustomColours.Get(ctx, guildId, colour.Int16())
-		if err != nil {
-			return 0, err
-		} else if !ok {
-			return colour.Default(), nil
-		} else {
-			return colourCode, nil
-		}
-	} else {
+	} else if !ok {
 		return colour.Default(), nil
+	} else {
+		return colourCode, nil
 	}
 }
 

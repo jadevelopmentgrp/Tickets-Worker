@@ -3,7 +3,11 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/common/premium"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/TicketsBot/database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
@@ -11,12 +15,7 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type ExitSurveySubmitHandler struct{}
@@ -55,17 +54,6 @@ func (h *ExitSurveySubmitHandler) Execute(cmd *cmdcontext.ModalContext) {
 	ticketId, err := strconv.Atoi(groups[2])
 	if err != nil {
 		cmd.HandleError(err)
-		return
-	}
-
-	premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, guildId, true, cmd.Worker().Token, cmd.Worker().RateLimiter)
-	if err != nil {
-		cmd.HandleError(err)
-		return
-	}
-
-	if premiumTier == premium.None {
-		cmd.ReplyRaw(customisation.Red, "Error", "The survey is no longer available for this ticket.") // TODO: i18n
 		return
 	}
 

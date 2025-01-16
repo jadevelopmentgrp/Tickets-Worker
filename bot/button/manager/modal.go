@@ -26,20 +26,6 @@ func HandleModalInteraction(ctx context.Context, manager *ComponentInteractionMa
 	lookupCtx, cancelLookupCtx := context.WithTimeout(ctx, time.Second*2)
 	defer cancelLookupCtx()
 
-	premiumTier, err := getPremiumTier(lookupCtx, worker, data.GuildId.Value)
-	if err != nil {
-		sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
-
-		premiumTier = premium.None
-	}
-
-	if premiumTier == premium.None && config.Conf.PremiumOnly {
-		return false
-	}
-
 	handler := manager.MatchModal(data.Data.CustomId)
 	if handler == nil {
 		return false

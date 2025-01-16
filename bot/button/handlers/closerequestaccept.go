@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/TicketsBot/common/premium"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
@@ -58,7 +57,7 @@ func (h *CloseRequestAcceptHandler) Execute(ctx *context.ButtonContext) {
 	}
 
 	ctx.Edit(command.MessageResponse{
-		Embeds: utils.Slice(utils.BuildEmbedRaw(customisation.DefaultColours[customisation.Green], "Close Request", "Closing ticket...", nil, premium.Whitelabel)), // TODO: Translations, calculate premium level
+		Embeds: utils.Slice(utils.BuildEmbedRaw(customisation.DefaultColours[customisation.Green], "Close Request", "Closing ticket...", nil)),
 	})
 
 	// Avoid users cant close issue

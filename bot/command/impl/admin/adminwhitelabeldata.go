@@ -119,5 +119,5 @@ func (AdminWhitelabelDataCommand) Execute(ctx registry.CommandContext, userId ui
 		utils.EmbedFieldRaw("Last 3 Errors", errorsFormatted, true),
 	}
 
-	ctx.ReplyWithEmbed(utils.BuildEmbedRaw(ctx.GetColour(customisation.Green), "Whitelabel", "", fields, ctx.PremiumTier()))
+	ctx.ReplyWithEmbed(utils.BuildEmbedRaw(ctx.GetColour(customisation.Green), "Whitelabel", "", fields))
 }

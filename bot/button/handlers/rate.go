@@ -2,7 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/TicketsBot/common/premium"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
@@ -13,10 +17,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type RateHandler struct{}
@@ -93,7 +93,7 @@ func (h *RateHandler) Execute(ctx *cmdcontext.ButtonContext) {
 	}
 
 	// Exit survey
-	if ctx.PremiumTier() > premium.None && ticket.PanelId != nil {
+	if ticket.PanelId != nil {
 		panel, err := dbclient.Client.Panel.GetById(ctx, *ticket.PanelId)
 		if err != nil {
 			ctx.HandleError(err)

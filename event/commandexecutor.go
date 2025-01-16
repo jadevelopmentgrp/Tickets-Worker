@@ -164,7 +164,7 @@ func executeCommand(
 			if errors.Is(err, ErrArgumentNotFound) {
 				if worker.IsWhitelabel {
 					content := `This command registration is outdated. Please ask the server administrators to visit the whitelabel dashboard and press "Create Slash Commands" again.`
-					embed := utils.BuildEmbedRaw(customisation.GetDefaultColour(customisation.Red), "Outdated Command", content, nil, 1)
+					embed := utils.BuildEmbedRaw(customisation.GetDefaultColour(customisation.Red), "Outdated Command", content, nil)
 					res := command.NewEphemeralEmbedMessageResponse(embed)
 					responseCh <- res.IntoApplicationCommandData()
 

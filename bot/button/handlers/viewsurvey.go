@@ -55,17 +55,6 @@ func (h *ViewSurveyHandler) Execute(ctx *context.ButtonContext) {
 		return
 	}
 
-	premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, guildId, true, ctx.Worker().Token, ctx.Worker().RateLimiter)
-	if err != nil {
-		ctx.HandleError(err)
-		return
-	}
-
-	if premiumTier == premium.None {
-		ctx.ReplyRaw(customisation.Red, "Error", "Premium is required for exit surveys.") // TODO: i18n
-		return
-	}
-
 	// Get ticket
 	ticket, err := dbclient.Client.Tickets.Get(ctx, ticketId, guildId)
 	if err != nil {

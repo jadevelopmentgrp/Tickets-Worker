@@ -2,7 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/TicketsBot/common/premium"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
@@ -13,10 +17,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type OpenSurveyHandler struct{}
@@ -52,17 +52,6 @@ func (h *OpenSurveyHandler) Execute(ctx *context.ButtonContext) {
 	ticketId, err := strconv.Atoi(groups[2])
 	if err != nil {
 		ctx.HandleError(err)
-		return
-	}
-
-	premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, guildId, true, ctx.Worker().Token, ctx.Worker().RateLimiter)
-	if err != nil {
-		ctx.HandleError(err)
-		return
-	}
-
-	if premiumTier == premium.None {
-		ctx.ReplyRaw(customisation.Red, "Error", "The survey is no longer available for this ticket.") // TODO: i18n
 		return
 	}
 

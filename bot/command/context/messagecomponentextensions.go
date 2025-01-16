@@ -72,7 +72,7 @@ func (e *MessageComponentExtensions) EditWith(colour customisation.Colour, title
 
 func (e *MessageComponentExtensions) EditWithRaw(colour customisation.Colour, title, content string) {
 	e.Edit(command.MessageResponse{
-		Embeds: utils.Slice(utils.BuildEmbedRaw(e.ctx.GetColour(colour), title, content, nil, e.ctx.PremiumTier())),
+		Embeds: utils.Slice(utils.BuildEmbedRaw(e.ctx.GetColour(colour), title, content, nil)),
 	})
 }
 
@@ -85,7 +85,7 @@ func (e *MessageComponentExtensions) EditWithComponents(colour customisation.Col
 
 func (e *MessageComponentExtensions) EditWithComponentsRaw(colour customisation.Colour, title, content string, components []component.Component) {
 	e.Edit(command.MessageResponse{
-		Embeds:     utils.Slice(utils.BuildEmbedRaw(e.ctx.GetColour(colour), title, content, nil, e.ctx.PremiumTier())),
+		Embeds:     utils.Slice(utils.BuildEmbedRaw(e.ctx.GetColour(colour), title, content, nil)),
 		Components: components,
 	})
 }
