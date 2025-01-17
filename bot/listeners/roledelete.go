@@ -2,10 +2,10 @@ package listeners
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
 	"github.com/rxdn/gdl/gateway/payloads/events"
@@ -33,6 +33,6 @@ func OnRoleDelete(worker *worker.Context, e events.GuildRoleDelete) {
 	})
 
 	if err := group.Wait(); err != nil {
-		sentry.ErrorWithContext(err, errorCtx)
+		fmt.Print(err, errorCtx)
 	}
 }

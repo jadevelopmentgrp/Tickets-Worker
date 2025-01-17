@@ -3,8 +3,13 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/database"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
@@ -19,10 +24,6 @@ import (
 	"github.com/rxdn/gdl/permission"
 	"github.com/rxdn/gdl/rest"
 	"github.com/rxdn/gdl/rest/request"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type AddSupportHandler struct{}
@@ -76,30 +77,6 @@ func (h *AddSupportHandler) Execute(ctx *context.ButtonContext) {
 	if mentionableType == context.MentionableTypeUser {
 		ctx.ReplyRaw(customisation.Red, "Error", "Users in support teams are now deprecated. Please use roles instead.")
 		return
-
-		/* TODO: Remove if Discord does not resolve the performance issues
-
-		// Guild owner doesn't need to be added
-		guild, err := ctx.Guild()
-		if err != nil {
-			ctx.HandleError(err)
-			return
-		}
-
-		if guild.OwnerId == id {
-			ctx.Reply(customisation.Red, i18n.Error, i18n.MessageOwnerIsAlreadyAdmin)
-			return
-		}
-
-		if err := dbclient.Client.Permissions.AddSupport(ctx.GuildId(), id); err != nil {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
-		}
-
-		if err := utils.ToRetriever(ctx.Worker()).Cache().SetCachedPermissionLevel(ctx.GuildId(), id, permcache.Support); err != nil {
-			ctx.HandleError(err)
-			return
-		}
-		*/
 	} else if mentionableType == context.MentionableTypeRole {
 		if id == ctx.GuildId() {
 			ctx.Reply(customisation.Red, i18n.Error, i18n.MessageAddSupportEveryone)

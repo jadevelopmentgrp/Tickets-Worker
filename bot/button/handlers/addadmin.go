@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	permcache "github.com/TicketsBot/common/permission"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"

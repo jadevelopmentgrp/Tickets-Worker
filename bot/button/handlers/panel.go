@@ -3,8 +3,8 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+
+	database "github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
@@ -35,7 +35,7 @@ func (h *PanelHandler) Properties() registry.Properties {
 func (h *PanelHandler) Execute(ctx *context.ButtonContext) {
 	panel, ok, err := dbclient.Client.Panel.GetByCustomId(ctx, ctx.GuildId(), ctx.InteractionData.CustomId)
 	if err != nil {
-		sentry.Error(err) // TODO: Proper context
+		fmt.Print(err) // TODO: Proper context
 		return
 	}
 

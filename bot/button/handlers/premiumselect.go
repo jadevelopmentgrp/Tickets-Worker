@@ -1,20 +1,18 @@
 package handlers
 
 import (
-	"fmt"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
+	"time"
+
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	prem "github.com/jadevelopmentgrp/Tickets-Worker/bot/premium"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"time"
 )
 
 type PremiumKeyOpenHandler struct{}
@@ -46,42 +44,16 @@ func (h *PremiumKeyOpenHandler) Execute(ctx *context.SelectMenuContext) {
 		return
 	}
 
-	option := ctx.InteractionData.Values[0]
-	if option == "patreon" {
-		entitlement, err := dbclient.Client.LegacyPremiumEntitlements.GetUserTier(ctx, ctx.UserId(), premium.PatreonGracePeriod)
-		if err != nil {
-			ctx.HandleError(err)
-			return
-		}
+	ctx.Modal(button.ResponseModal{
+		Data: prem.BuildKeyModal(ctx.GuildId()),
+	})
 
-		if entitlement == nil {
-			ctx.Edit(prem.BuildPatreonNotLinkedMessage(ctx))
-		} else {
-			res, err := prem.BuildPatreonSubscriptionFoundMessage(ctx, entitlement)
-			if err != nil {
-				ctx.HandleError(err)
-				return
-			}
+	components := utils.Slice(component.BuildActionRow(component.BuildButton(component.Button{
+		Label:    ctx.GetMessage(i18n.MessagePremiumOpenForm),
+		CustomId: "open_premium_key_modal",
+		Style:    component.ButtonStylePrimary,
+		Emoji:    utils.BuildEmoji("🔑"),
+	})))
 
-			ctx.Edit(res)
-		}
-	} else if option == "discord" {
-		ctx.Edit(prem.BuildDiscordNotFoundMessage(ctx))
-	} else if option == "key" {
-		ctx.Modal(button.ResponseModal{
-			Data: prem.BuildKeyModal(ctx.GuildId()),
-		})
-
-		components := utils.Slice(component.BuildActionRow(component.BuildButton(component.Button{
-			Label:    ctx.GetMessage(i18n.MessagePremiumOpenForm),
-			CustomId: "open_premium_key_modal",
-			Style:    component.ButtonStylePrimary,
-			Emoji:    utils.BuildEmoji("🔑"),
-		})))
-
-		ctx.EditWithComponents(customisation.Green, i18n.TitlePremium, i18n.MessagePremiumOpenFormDescription, components)
-	} else {
-		ctx.HandleError(fmt.Errorf("Invalid premium purchase method: %s", option))
-		return
-	}
+	ctx.EditWithComponents(customisation.Green, i18n.TitlePremium, i18n.MessagePremiumOpenFormDescription, components)
 }

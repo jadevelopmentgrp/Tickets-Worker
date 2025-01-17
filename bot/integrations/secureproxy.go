@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/TicketsBot/common/sentry"
 	"io"
 	"net/http"
 )
@@ -72,7 +71,7 @@ func (p *SecureProxyClient) DoRequest(ctx context.Context, method, url string, h
 
 	res, err := p.client.Do(req)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return nil, errors.New("error proxying request")
 	}
 

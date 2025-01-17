@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/database"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"

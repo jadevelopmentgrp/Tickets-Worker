@@ -7,9 +7,7 @@ import (
 	"strings"
 	"time"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -31,17 +29,13 @@ type Replyable struct {
 
 func NewReplyable(ctx registry.CommandContext) *Replyable {
 	var colourCodes map[customisation.Colour]int
-	if ctx.PremiumTier() > premium.None {
-		// TODO: Propagate context
-		tmp, err := customisation.GetColours(context.Background(), ctx.GuildId())
-		if err != nil {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
-			colourCodes = customisation.DefaultColours
-		} else {
-			colourCodes = tmp
-		}
-	} else {
+	// TODO: Propagate context
+	tmp, err := customisation.GetColours(context.Background(), ctx.GuildId())
+	if err != nil {
+		fmt.Print(err, ctx.ToErrorContext())
 		colourCodes = customisation.DefaultColours
+	} else {
+		colourCodes = tmp
 	}
 
 	return &Replyable{
@@ -122,7 +116,7 @@ func (r *Replyable) HandleError(err error) {
 		fmt.Printf("ctx.HandleError: %s\n", err.Error())
 	}
 
-	eventId := sentry.ErrorWithContext(err, r.ctx.ToErrorContext())
+	fmt.Print(err, r.ctx.ToErrorContext())
 
 	if errors.Is(err, ErrReplyLimitReached) {
 		return
@@ -135,12 +129,12 @@ func (r *Replyable) HandleError(err error) {
 	permLevel, resolveError := r.ctx.UserPermissionLevel(ctx)
 	showInviteLink := !r.ctx.Worker().IsWhitelabel && (resolveError != nil || permLevel > permcache.Everyone)
 
-	res := r.buildErrorResponse(err, eventId, showInviteLink)
+	res := r.buildErrorResponse(err, showInviteLink)
 	_, _ = r.ctx.ReplyWith(res)
 }
 
 func (r *Replyable) HandleWarning(err error) {
-	eventId := sentry.LogWithContext(err, r.ctx.ToErrorContext())
+	fmt.Print(err, r.ctx.ToErrorContext())
 
 	if errors.Is(err, ErrReplyLimitReached) {
 		return
@@ -153,7 +147,7 @@ func (r *Replyable) HandleWarning(err error) {
 	permLevel, resolveError := r.ctx.UserPermissionLevel(ctx)
 	showInviteLink := !r.ctx.Worker().IsWhitelabel && (resolveError != nil || permLevel > permcache.Everyone)
 
-	res := r.buildErrorResponse(err, eventId, showInviteLink)
+	res := r.buildErrorResponse(err, showInviteLink)
 	_, _ = r.ctx.ReplyWith(res)
 }
 
@@ -169,7 +163,7 @@ func (r *Replyable) SelectValidEmoji(customEmoji customisation.CustomEmoji, fall
 	}
 }
 
-func (r *Replyable) buildErrorResponse(err error, eventId string, includeInviteLink bool) command.MessageResponse {
+func (r *Replyable) buildErrorResponse(err error, includeInviteLink bool) command.MessageResponse {
 	var message string
 	var imageUrl *string
 
@@ -188,25 +182,25 @@ func (r *Replyable) buildErrorResponse(err error, eventId string, includeInviteL
 
 						message += "\nPlease assign these permissions to the bot, or alternatively, the `Administrator` permission and try again."
 					} else {
-						message = formatDiscordError(restError, eventId)
+						message = formatDiscordError(restError)
 					}
 				} else {
-					sentry.ErrorWithContext(err, r.ctx.ToErrorContext())
-					message = formatDiscordError(restError, eventId)
+					fmt.Print(err, r.ctx.ToErrorContext())
+					message = formatDiscordError(restError)
 				}
 			} else {
-				message = formatDiscordError(restError, eventId)
+				message = formatDiscordError(restError)
 			}
 		} else if restError.ApiError.FirstErrorCode() == "CHANNEL_PARENT_INVALID" {
 			message = "Could not find the ticket channel category: it must have been deleted. Ask a server " +
 				"administrator to visit the dashboard and assign a valid channel category to this ticket panel."
 		} else {
-			message = formatDiscordError(restError, eventId)
+			message = formatDiscordError(restError)
 		}
 	} else if errors.Is(err, context.DeadlineExceeded) {
 		message = "The operation timed out, please try again."
 	} else {
-		message = fmt.Sprintf("An error occurred while performing this action.\nError ID: `%s`", eventId)
+		message = fmt.Sprintf("An error occurred while performing this action.")
 	}
 
 	embed := r.buildEmbedRaw(customisation.Red, r.GetMessage(i18n.Error), message)
@@ -232,13 +226,12 @@ func (r *Replyable) buildErrorResponse(err error, eventId string, includeInviteL
 	return res
 }
 
-func formatDiscordError(restError request.RestError, eventId string) string {
+func formatDiscordError(restError request.RestError) string {
 	return fmt.Sprintf("An error occurred while performing this action:\n"+
 		"```\n"+
 		"%s\n"+
-		"```\n"+
-		"Error ID: `%s`",
-		restError.Error(), eventId)
+		"```\n",
+		restError.Error())
 }
 
 func findMissingPermissions(ctx registry.InteractionContext) ([]permission.Permission, error) {

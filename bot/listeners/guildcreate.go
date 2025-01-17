@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -27,7 +26,7 @@ func OnGuildCreate(worker *worker.Context, e events.GuildCreate) {
 	// check if guild is blacklisted
 	if blacklist.IsGuildBlacklisted(e.Guild.Id) {
 		if err := worker.LeaveGuild(e.Guild.Id); err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 
 		return
@@ -44,7 +43,7 @@ func OnGuildCreate(worker *worker.Context, e events.GuildCreate) {
 		}
 
 		if err := dbclient.Client.GuildLeaveTime.Delete(ctx, e.Guild.Id); err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 
 		// Add roles with Administrator permission as bot admins by default
@@ -56,7 +55,7 @@ func OnGuildCreate(worker *worker.Context, e events.GuildCreate) {
 
 			if permission.HasPermissionRaw(role.Permissions, permission.Administrator) {
 				if err := dbclient.Client.RolePermissions.AddAdmin(ctx, e.Guild.Id, role.Id); err != nil { // TODO: Bulk
-					sentry.Error(err)
+					fmt.Print(err)
 				}
 			}
 		}
@@ -92,7 +91,7 @@ func getInviter(worker *worker.Context, guildId uint64) (userId uint64) {
 
 	auditLog, err := worker.GetGuildAuditLog(guildId, data)
 	if err != nil {
-		sentry.Error(err) // prob perms
+		fmt.Print(err) // prob perms
 		return
 	}
 

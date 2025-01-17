@@ -6,9 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
 	"github.com/google/uuid"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -117,7 +116,7 @@ func (AdminGenPremiumCommand) AutoCompleteHandler(data interaction.ApplicationCo
 
 	skus, err := dbclient.Client.SubscriptionSkus.Search(ctx, value, 10)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return nil
 	}
 

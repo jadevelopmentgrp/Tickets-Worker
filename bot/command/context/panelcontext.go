@@ -3,11 +3,10 @@ package context
 import (
 	"context"
 	"errors"
+	"fmt"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
@@ -27,7 +26,6 @@ type PanelContext struct {
 	*StateCache
 	worker                     *worker.Context
 	guildId, channelId, userId uint64
-	premium                    premium.PremiumTier
 	dmChannelId                uint64
 }
 
@@ -37,7 +35,6 @@ func NewPanelContext(
 	ctx context.Context,
 	worker *worker.Context,
 	guildId, channelId, userId uint64,
-	premium premium.PremiumTier,
 ) PanelContext {
 	c := PanelContext{
 		Context:     ctx,
@@ -45,7 +42,6 @@ func NewPanelContext(
 		guildId:     guildId,
 		channelId:   channelId,
 		userId:      userId,
-		premium:     premium,
 		dmChannelId: 0,
 	}
 
@@ -79,10 +75,6 @@ func (c *PanelContext) UserPermissionLevel(ctx context.Context) (permcache.Permi
 	return permcache.GetPermissionLevel(ctx, utils.ToRetriever(c.worker), member, c.guildId)
 }
 
-func (c *PanelContext) PremiumTier() premium.PremiumTier {
-	return c.premium
-}
-
 func (c *PanelContext) IsInteraction() bool {
 	return true
 }
@@ -104,7 +96,7 @@ func (c *PanelContext) openDm() (uint64, bool) {
 		cachedId, err := redis.GetDMChannel(c.UserId(), c.Worker().BotId)
 		if err != nil { // We can continue
 			if err != redis.ErrNotCached {
-				sentry.ErrorWithContext(err, c.ToErrorContext())
+				fmt.Print(err, c.ToErrorContext())
 			}
 		} else { // We have it cached
 			if cachedId == nil {
@@ -119,18 +111,18 @@ func (c *PanelContext) openDm() (uint64, bool) {
 			// check for 403
 			if err, ok := err.(request.RestError); ok && err.StatusCode == 403 {
 				if err := redis.StoreNullDMChannel(c.UserId(), c.Worker().BotId); err != nil {
-					sentry.ErrorWithContext(err, c.ToErrorContext())
+					fmt.Print(err, c.ToErrorContext())
 				}
 
 				return 0, false
 			}
 
-			sentry.ErrorWithContext(err, c.ToErrorContext())
+			fmt.Print(err, c.ToErrorContext())
 			return 0, false
 		}
 
 		if err := redis.StoreDMChannel(c.UserId(), ch.Id, c.Worker().BotId); err != nil {
-			sentry.ErrorWithContext(err, c.ToErrorContext())
+			fmt.Print(err, c.ToErrorContext())
 		}
 
 		c.dmChannelId = ch.Id
@@ -147,7 +139,7 @@ func (c *PanelContext) ReplyWith(response command.MessageResponse) (message.Mess
 
 	msg, err := c.Worker().CreateMessageComplex(ch, response.IntoCreateMessageData())
 	if err != nil {
-		sentry.ErrorWithContext(err, c.ToErrorContext())
+		fmt.Print(err, c.ToErrorContext())
 	}
 
 	return msg, err

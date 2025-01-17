@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TicketsBot/database"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 )

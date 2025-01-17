@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	"github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
 	"github.com/rxdn/gdl/cache"

@@ -3,7 +3,7 @@ package registry
 import (
 	"time"
 
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction"
@@ -16,7 +16,6 @@ type Properties struct {
 	Aliases          []string
 	PermissionLevel  permission.PermissionLevel
 	Children         []Command // TODO: Map
-	PremiumOnly      bool
 	Category         command.Category
 	AdminOnly        bool
 	HelperOnly       bool

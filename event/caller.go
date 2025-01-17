@@ -5,16 +5,16 @@ package event
 
 import (
     "fmt"
-    "github.com/jadevelopment/Tickets-Worker/bot/command"
-    cmdcontext "github.com/jadevelopment/Tickets-Worker/bot/command/context"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/general"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/tickets"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/settings"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/statistics"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/tags"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/settings/setup"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/impl/admin"
-    "github.com/jadevelopment/Tickets-Worker/bot/command/registry"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
+    cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/general"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/tickets"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/settings"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/statistics"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/tags"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/settings/setup"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/admin"
+    "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
     "github.com/pkg/errors"
     "github.com/rxdn/gdl/objects/interaction"
     "strconv"
@@ -317,9 +317,6 @@ func callCommand(
 
         v.Execute(ctx)
     case settings.PanelCommand:
-
-        v.Execute(ctx)
-    case settings.PremiumCommand:
 
         v.Execute(ctx)
     case settings.RemoveAdminCommand:

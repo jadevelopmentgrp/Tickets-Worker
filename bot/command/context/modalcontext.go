@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
@@ -34,7 +32,6 @@ type ModalContext struct {
 	*StateCache
 	worker          *worker.Context
 	Interaction     interaction.ModalSubmitInteraction
-	premium         premium.PremiumTier
 	hasReplied      *atomic.Bool
 	responseChannel chan button.Response
 }
@@ -45,7 +42,6 @@ func NewModalContext(
 	ctx context.Context,
 	worker *worker.Context,
 	interaction interaction.ModalSubmitInteraction,
-	premium premium.PremiumTier,
 	responseChannel chan button.Response,
 ) *ModalContext {
 	c := ModalContext{
@@ -53,7 +49,6 @@ func NewModalContext(
 		ReplyCounter:    NewReplyCounter(),
 		worker:          worker,
 		Interaction:     interaction,
-		premium:         premium,
 		hasReplied:      atomic.NewBool(false),
 		responseChannel: responseChannel,
 	}
@@ -112,10 +107,6 @@ func (c *ModalContext) UserPermissionLevel(ctx context.Context) (permcache.Permi
 	return permcache.GetPermissionLevel(ctx, utils.ToRetriever(c.worker), *c.Interaction.Member, c.GuildId())
 }
 
-func (c *ModalContext) PremiumTier() premium.PremiumTier {
-	return c.premium
-}
-
 func (c *ModalContext) IsInteraction() bool {
 	return true
 }
@@ -150,7 +141,7 @@ func (c *ModalContext) ReplyWith(response command.MessageResponse) (msg message.
 
 		msg, err = rest.CreateFollowupMessage(context.Background(), c.Interaction.Token, c.worker.RateLimiter, c.worker.BotId, response.IntoWebhookBody())
 		if err != nil {
-			sentry.LogWithContext(err, c.ToErrorContext())
+			fmt.Print(err, c.ToErrorContext())
 		}
 	}
 
@@ -181,7 +172,7 @@ func (c *ModalContext) InteractionMember() member.Member {
 	if c.Interaction.Member != nil {
 		return *c.Interaction.Member
 	} else {
-		sentry.ErrorWithContext(fmt.Errorf("ModalContext.InteractionMember was called when Member is nil"), c.ToErrorContext())
+		fmt.Print(fmt.Errorf("ModalContext.InteractionMember was called when Member is nil"), c.ToErrorContext())
 		return member.Member{}
 	}
 }
@@ -196,13 +187,13 @@ func (c *ModalContext) InteractionUser() user.User {
 	} else if c.Interaction.User != nil {
 		return *c.Interaction.User
 	} else { // Infallible
-		sentry.ErrorWithContext(fmt.Errorf("infallible: ModalContext.InteractionUser was called when User is nil"), c.ToErrorContext())
+		fmt.Print(fmt.Errorf("infallible: ModalContext.InteractionUser was called when User is nil"), c.ToErrorContext())
 		return user.User{}
 	}
 }
 
 func (c *ModalContext) IntoPanelContext() PanelContext {
-	return NewPanelContext(c.Context, c.worker, c.GuildId(), c.ChannelId(), c.InteractionUser().Id, c.PremiumTier())
+	return NewPanelContext(c.Context, c.worker, c.GuildId(), c.ChannelId(), c.InteractionUser().Id)
 }
 
 func (c *ModalContext) IsBlacklisted(ctx context.Context) (bool, error) {

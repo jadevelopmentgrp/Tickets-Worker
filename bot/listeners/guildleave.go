@@ -2,10 +2,10 @@ package listeners
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
 	"github.com/rxdn/gdl/gateway/payloads/events"
@@ -20,25 +20,22 @@ func OnGuildLeave(worker *worker.Context, e events.GuildDelete) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3) // TODO: Propagate context
 	defer cancel()
 
-	span := sentry.StartSpan(ctx, "OnGuildLeave")
-	defer span.Finish()
-
 	if e.Unavailable == nil {
 		statsd.Client.IncrementKey(statsd.KeyLeaves)
 
 		if worker.IsWhitelabel {
 			if err := dbclient.Client.WhitelabelGuilds.Delete(ctx, worker.BotId, e.Guild.Id); err != nil {
-				sentry.Error(err)
+				fmt.Print(err)
 			}
 		}
 
 		// Exclude from autoclose
 		if err := dbclient.Client.AutoCloseExclude.ExcludeAll(ctx, e.Guild.Id); err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 
 		if err := dbclient.Client.GuildLeaveTime.Set(ctx, e.Guild.Id); err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 	}
 }

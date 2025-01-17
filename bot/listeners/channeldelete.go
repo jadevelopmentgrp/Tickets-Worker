@@ -2,10 +2,10 @@ package listeners
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/rxdn/gdl/gateway/payloads/events"
 )
@@ -15,23 +15,18 @@ func OnChannelDelete(worker *worker.Context, e events.ChannelDelete) {
 	defer cancel()
 
 	// If this is a ticket channel, close it
-	if err := sentry.WithSpan1(ctx, "Close ticket by channel", func(span *sentry.Span) error {
-		return dbclient.Client.Tickets.CloseByChannel(ctx, e.Id)
-	}); err != nil {
-		sentry.Error(err)
+
+	if err := dbclient.Client.Tickets.CloseByChannel(ctx, e.Id); err != nil {
+		fmt.Print(err)
 	}
 
 	// if this is a channel category, delete it
-	if err := sentry.WithSpan1(ctx, "Delete category by channel", func(span *sentry.Span) error {
-		return dbclient.Client.ChannelCategory.DeleteByChannel(ctx, e.Id)
-	}); err != nil {
-		sentry.Error(err)
+	if err := dbclient.Client.ChannelCategory.DeleteByChannel(ctx, e.Id); err != nil {
+		fmt.Print(err)
 	}
 
 	// if this is an archive channel, delete it
-	if err := sentry.WithSpan1(ctx, "Delete archive channel by channel", func(span *sentry.Span) error {
-		return dbclient.Client.ArchiveChannel.DeleteByChannel(ctx, e.Id)
-	}); err != nil {
-		sentry.Error(err)
+	if err := dbclient.Client.ArchiveChannel.DeleteByChannel(ctx, e.Id); err != nil {
+		fmt.Print(err)
 	}
 }

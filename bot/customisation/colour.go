@@ -2,8 +2,8 @@ package customisation
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/TicketsBot/common/sentry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 )
 
@@ -62,7 +62,6 @@ func GetColours(ctx context.Context, guildId uint64) (map[Colour]int, error) {
 	return colours, nil
 }
 
-// TODO: Premium check
 func GetColour(ctx context.Context, guildId uint64, colourCode Colour) (int, error) {
 	colour, ok, err := dbclient.Client.CustomColours.Get(ctx, guildId, colourCode.Int16())
 	if err != nil {
@@ -76,11 +75,10 @@ func GetColour(ctx context.Context, guildId uint64, colourCode Colour) (int, err
 	return colour, nil
 }
 
-// TODO: Premium check
 func GetColourOrDefault(ctx context.Context, guildId uint64, colourCode Colour) int {
 	colour, ok, err := dbclient.Client.CustomColours.Get(ctx, guildId, colourCode.Int16())
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return GetDefaultColour(colourCode)
 	}
 

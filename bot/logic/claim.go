@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"

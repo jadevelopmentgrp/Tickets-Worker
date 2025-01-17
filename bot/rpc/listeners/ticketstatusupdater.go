@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/TicketsBot/common/rpc"
-	"github.com/TicketsBot/common/rpc/model"
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/rpc"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/rpc/model"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/prometheus"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
 	"github.com/rxdn/gdl/cache"

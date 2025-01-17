@@ -1,8 +1,12 @@
 package handlers
 
 import (
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
@@ -12,10 +16,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/channel/embed"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type ViewSurveyHandler struct{}

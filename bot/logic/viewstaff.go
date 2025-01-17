@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/TicketsBot/common/sentry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -28,7 +27,7 @@ func BuildViewStaffMessage(ctx context.Context, cmd registry.CommandContext, pag
 	{
 		adminUsers, err := dbclient.Client.Permissions.GetAdmins(ctx, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, cmd.ToErrorContext())
+			fmt.Print(err, cmd.ToErrorContext())
 		}
 
 		lower := perField * page
@@ -57,7 +56,7 @@ func BuildViewStaffMessage(ctx context.Context, cmd registry.CommandContext, pag
 	{
 		adminRoles, err := dbclient.Client.RolePermissions.GetAdminRoles(ctx, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, cmd.ToErrorContext())
+			fmt.Print(err, cmd.ToErrorContext())
 		}
 
 		lower := perField * page
@@ -88,7 +87,7 @@ func BuildViewStaffMessage(ctx context.Context, cmd registry.CommandContext, pag
 	{
 		supportUsers, err := dbclient.Client.Permissions.GetSupportOnly(ctx, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, cmd.ToErrorContext())
+			fmt.Print(err, cmd.ToErrorContext())
 		}
 
 		lower := perField * page
@@ -117,7 +116,7 @@ func BuildViewStaffMessage(ctx context.Context, cmd registry.CommandContext, pag
 	{
 		supportRoles, err := dbclient.Client.RolePermissions.GetSupportRolesOnly(ctx, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, cmd.ToErrorContext())
+			fmt.Print(err, cmd.ToErrorContext())
 		}
 
 		lower := perField * page

@@ -5,8 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -41,17 +40,6 @@ func (c AdminWhitelabelDataCommand) GetExecutor() interface{} {
 }
 
 func (AdminWhitelabelDataCommand) Execute(ctx registry.CommandContext, userId uint64) {
-	tier, err := utils.PremiumClient.GetTierByUser(ctx, userId, false)
-	if err != nil {
-		ctx.HandleError(err)
-		return
-	}
-
-	if tier < premium.Whitelabel {
-		ctx.ReplyRaw(customisation.Red, "Subscription not found", fmt.Sprintf("User does not have a whitelabel subscription (%s)", tier.String()))
-		return
-	}
-
 	data, err := dbclient.Client.Whitelabel.GetByUserId(ctx, userId)
 	if err != nil {
 		ctx.HandleError(err)
@@ -112,7 +100,6 @@ func (AdminWhitelabelDataCommand) Execute(ctx registry.CommandContext, userId ui
 	}
 
 	fields := []embed.EmbedField{
-		utils.EmbedFieldRaw("Subscription Tier", tier.String(), true),
 		utils.EmbedFieldRaw("Bot ID", botIdFormatted, true),
 		utils.EmbedFieldRaw("Public Key", publicKeyFormatted, true),
 		utils.EmbedFieldRaw("Guilds", guildsFormatted, true),

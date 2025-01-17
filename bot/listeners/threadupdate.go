@@ -2,11 +2,11 @@ package listeners
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -26,13 +26,13 @@ func OnThreadUpdate(worker *worker.Context, e events.ThreadUpdate) {
 
 	settings, err := dbclient.Client.Settings.Get(ctx, e.GuildId)
 	if err != nil {
-		sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+		fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 		return
 	}
 
 	ticket, err := dbclient.Client.Tickets.GetByChannelAndGuild(ctx, e.Id, e.GuildId)
 	if err != nil {
-		sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+		fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 		return
 	}
 
@@ -44,7 +44,7 @@ func OnThreadUpdate(worker *worker.Context, e events.ThreadUpdate) {
 	if ticket.PanelId != nil {
 		tmp, err := dbclient.Client.Panel.GetById(ctx, *ticket.PanelId)
 		if err != nil {
-			sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+			fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 			return
 		}
 
@@ -53,35 +53,29 @@ func OnThreadUpdate(worker *worker.Context, e events.ThreadUpdate) {
 		}
 	}
 
-	premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, e.GuildId, true, worker.Token, worker.RateLimiter)
-	if err != nil {
-		sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
-		return
-	}
-
 	// Handle thread being unarchived
 	if !ticket.Open && !e.ThreadMetadata.Archived {
 		if err := dbclient.Client.Tickets.SetOpen(ctx, ticket.GuildId, ticket.Id); err != nil {
-			sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+			fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 			return
 		}
 
 		if settings.TicketNotificationChannel != nil {
 			staffCount, err := logic.GetStaffInThread(ctx, worker, ticket, e.Id)
 			if err != nil {
-				sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+				fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 				return
 			}
 
-			data := logic.BuildThreadReopenMessage(ctx, worker, ticket.GuildId, ticket.UserId, ticket.Id, panel, staffCount, premiumTier)
+			data := logic.BuildThreadReopenMessage(ctx, worker, ticket.GuildId, ticket.UserId, ticket.Id, panel, staffCount)
 			msg, err := worker.CreateMessageComplex(*settings.TicketNotificationChannel, data.IntoCreateMessageData())
 			if err != nil {
-				sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+				fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 				return
 			}
 
 			if err := dbclient.Client.Tickets.SetJoinMessageId(ctx, ticket.GuildId, ticket.Id, &msg.Id); err != nil {
-				sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
+				fmt.Print(err, errorcontext.WorkerErrorContext{Guild: e.GuildId})
 				return
 			}
 		}
@@ -89,7 +83,7 @@ func OnThreadUpdate(worker *worker.Context, e events.ThreadUpdate) {
 		ctx, cancel := context.WithTimeout(context.Background(), constants.TimeoutCloseTicket)
 		defer cancel()
 
-		cc := cmdcontext.NewAutoCloseContext(ctx, worker, ticket.GuildId, e.Id, worker.BotId, premiumTier)
+		cc := cmdcontext.NewAutoCloseContext(ctx, worker, ticket.GuildId, e.Id, worker.BotId)
 		logic.CloseTicket(ctx, cc, utils.Ptr("Thread was archived"), true) // TODO: Translate
 	}
 }

@@ -2,12 +2,11 @@ package tags
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/model"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/model"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -62,7 +61,7 @@ func (TagCommand) Execute(ctx registry.CommandContext, tagId string) {
 
 	ticket, err := dbclient.Client.Tickets.GetByChannelAndGuild(ctx, ctx.ChannelId(), ctx.GuildId())
 	if err != nil {
-		sentry.ErrorWithContext(err, ctx.ToErrorContext())
+		fmt.Print(err, ctx.ToErrorContext())
 		return
 	}
 
@@ -74,7 +73,7 @@ func (TagCommand) Execute(ctx registry.CommandContext, tagId string) {
 	var embeds []*embed.Embed
 	if tag.Embed != nil {
 		embeds = []*embed.Embed{
-			logic.BuildCustomEmbed(ctx, ctx.Worker(), ticket, *tag.Embed.CustomEmbed, tag.Embed.Fields, false, nil),
+			logic.BuildCustomEmbed(ctx, ctx.Worker(), ticket, *tag.Embed.CustomEmbed, tag.Embed.Fields, nil),
 		}
 	}
 
@@ -99,16 +98,16 @@ func (TagCommand) Execute(ctx registry.CommandContext, tagId string) {
 	// Count user as a participant so that Tickets Answered stat includes tickets where only /tag was used
 	if ticket.GuildId != 0 {
 		if err := dbclient.Client.Participants.Set(ctx, ctx.GuildId(), ticket.Id, ctx.UserId()); err != nil {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
+			fmt.Print(err, ctx.ToErrorContext())
 		}
 
 		if err := dbclient.Client.Tickets.SetStatus(ctx, ctx.GuildId(), ticket.Id, model.TicketStatusPending); err != nil {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
+			fmt.Print(err, ctx.ToErrorContext())
 		}
 
-		if !ticket.IsThread && ctx.PremiumTier() > premium.None {
+		if !ticket.IsThread {
 			if err := dbclient.Client.CategoryUpdateQueue.Add(ctx, ctx.GuildId(), ticket.Id, model.TicketStatusPending); err != nil {
-				sentry.ErrorWithContext(err, ctx.ToErrorContext())
+				fmt.Print(err, ctx.ToErrorContext())
 			}
 		}
 	}
@@ -120,7 +119,7 @@ func (TagCommand) AutoCompleteHandler(data interaction.ApplicationCommandAutoCom
 
 	tagIds, err := dbclient.Client.Tag.GetStartingWith(ctx, data.GuildId.Value, value, 25)
 	if err != nil {
-		sentry.Error(err) // TODO: Error context
+		fmt.Print(err) // TODO: Error context
 		return nil
 	}
 

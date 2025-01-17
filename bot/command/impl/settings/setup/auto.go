@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"

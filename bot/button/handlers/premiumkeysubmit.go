@@ -3,8 +3,8 @@ package handlers
 import (
 	"context"
 	"errors"
-	"github.com/TicketsBot/common/model"
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/model"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	commandcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"

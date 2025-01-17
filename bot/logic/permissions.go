@@ -5,9 +5,9 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/TicketsBot/common/collections"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/collections"
+	"github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/member"

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/TicketsBot/analytics-client"
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Analytics"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -30,7 +30,6 @@ func (StatsServerCommand) Properties() registry.Properties {
 		Type:             interaction.ApplicationCommandTypeChatInput,
 		PermissionLevel:  permission.Support,
 		Category:         command.Statistics,
-		PremiumOnly:      true,
 		DefaultEphemeral: true,
 		Timeout:          time.Second * 10,
 	}

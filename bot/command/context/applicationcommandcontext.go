@@ -5,10 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
@@ -30,7 +28,6 @@ type SlashCommandContext struct {
 	InteractionExtension
 	worker      *worker.Context
 	Interaction interaction.ApplicationCommandInteraction
-	premium     premium.PremiumTier
 
 	hasReplied *atomic.Bool
 	responseCh chan interaction.ApplicationCommandCallbackData
@@ -42,7 +39,6 @@ func NewSlashCommandContext(
 	ctx context.Context,
 	worker *worker.Context,
 	interaction interaction.ApplicationCommandInteraction,
-	premium premium.PremiumTier,
 	responseCh chan interaction.ApplicationCommandCallbackData,
 ) SlashCommandContext {
 	c := SlashCommandContext{
@@ -54,7 +50,6 @@ func NewSlashCommandContext(
 
 		worker:      worker,
 		Interaction: interaction,
-		premium:     premium,
 
 		hasReplied: atomic.NewBool(false),
 		responseCh: responseCh,
@@ -83,7 +78,7 @@ func (c *SlashCommandContext) UserId() uint64 {
 	} else if c.Interaction.User != nil {
 		return c.Interaction.User.Id
 	} else {
-		sentry.ErrorWithContext(fmt.Errorf("infallible: interaction.member and interaction.user are both null"), c.ToErrorContext())
+		fmt.Errorf("infallible: interaction.member and interaction.user are both null")
 		return 0
 	}
 }
@@ -94,10 +89,6 @@ func (c *SlashCommandContext) UserPermissionLevel(ctx context.Context) (permcach
 	}
 
 	return permcache.GetPermissionLevel(ctx, utils.ToRetriever(c.worker), *c.Interaction.Member, c.GuildId())
-}
-
-func (c *SlashCommandContext) PremiumTier() premium.PremiumTier {
-	return c.premium
 }
 
 func (c *SlashCommandContext) IsInteraction() bool {
@@ -126,23 +117,6 @@ func (c *SlashCommandContext) ReplyWith(response command.MessageResponse) (messa
 	c.responseCh <- response.IntoApplicationCommandData()
 
 	return message.Message{}, nil
-
-	/*
-		if hasReplied {
-			msg, err := rest.EditOriginalInteractionResponse(context.Background(), c.Interaction.Token, c.worker.RateLimiter, c.worker.BotId, response.IntoWebhookEditBody())
-
-			if err != nil {
-				sentry.LogWithContext(err, c.ToErrorContext())
-			}
-
-			return msg, err
-		} else {
-			c.responseCh <- response.IntoApplicationCommandData()
-
-			// todo: uhm
-			return message.Message{}, nil
-		}
-	*/
 }
 
 func (c *SlashCommandContext) Channel() (channel.PartialChannel, error) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/objects/interaction"

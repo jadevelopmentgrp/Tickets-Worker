@@ -4,10 +4,6 @@ go 1.22
 
 require (
 	cloud.google.com/go/profiler v0.4.1
-	github.com/TicketsBot/analytics-client v0.0.0-20240724103359-30f5dac821e6
-	github.com/TicketsBot/archiverclient v0.0.0-20241012221057-16a920bfb454
-	github.com/TicketsBot/common v0.0.0-20241117150316-ff54c97b45c1
-	github.com/TicketsBot/database v0.0.0-20241116234225-cdf216a9ffca
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/elliotchance/orderedmap v1.2.1
 	github.com/gin-gonic/gin v1.9.1
@@ -15,6 +11,9 @@ require (
 	github.com/go-redsync/redsync/v4 v4.12.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v4 v4.18.3
+	github.com/jadevelopmentgrp/Tickets-Analytics v1.0.0
+	github.com/jadevelopmentgrp/Tickets-Archiver-Client v1.0.0
+	github.com/jadevelopmentgrp/Tickets-Database v1.0.3
 	github.com/jedib0t/go-pretty/v6 v6.5.6
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
@@ -39,7 +38,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/ClickHouse/ch-go v0.52.1 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.10.0 // indirect
-	github.com/TicketsBot/logarchiver v0.0.0-20241012220745-5f3ba17a5138 // indirect
 	github.com/TicketsBot/ttlcache v1.6.1-0.20200405150101-acc18e37b261 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -52,9 +50,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
-	github.com/getsentry/sentry-go v0.21.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
@@ -83,6 +79,8 @@ require (
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/jadevelopmentgrp/Tickets-Archiver v1.0.3 // indirect
+	github.com/jadevelopmentgrp/Tickets-Utilities v1.0.0 // indirect
 	github.com/juju/ratelimit v1.0.1 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
@@ -96,7 +94,6 @@ require (
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/panjf2000/ants/v2 v2.10.0 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
 	github.com/paulmach/orb v0.9.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
@@ -112,8 +109,6 @@ require (
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/tatsuworks/czlib v0.0.0-20190916144400-8a51758ea0d9 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/twmb/franz-go v1.18.0 // indirect
-	github.com/twmb/franz-go/pkg/kmsg v1.9.0 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect

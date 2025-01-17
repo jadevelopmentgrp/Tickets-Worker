@@ -2,10 +2,10 @@ package tickets
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
@@ -48,7 +48,7 @@ func (CloseCommand) AutoCompleteHandler(data interaction.ApplicationCommandAutoC
 	// Get ticket
 	ticket, e := dbclient.Client.Tickets.GetByChannelAndGuild(context.Background(), data.ChannelId, data.GuildId.Value)
 	if e != nil {
-		sentry.Error(e) // TODO: Context
+		fmt.Print(e) // TODO: Context
 		return nil
 	}
 
@@ -75,7 +75,7 @@ func (CloseCommand) AutoCompleteHandler(data interaction.ApplicationCommandAutoC
 	}
 
 	if err != nil {
-		sentry.Error(err) // TODO: Context
+		fmt.Print(err) // TODO: Context
 		return nil
 	}
 

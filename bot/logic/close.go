@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/TicketsBot/common/collections"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/collections"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -44,7 +43,7 @@ func CloseTicket(ctx context.Context, cmd registry.CommandContext, reason *strin
 	defer func() {
 		if !success {
 			if err := dbclient.Client.AutoCloseExclude.Exclude(ctx, ticket.GuildId, ticket.Id); err != nil {
-				sentry.ErrorWithContext(err, errorContext)
+				fmt.Print(err, errorContext)
 			}
 		}
 	}()
@@ -104,7 +103,7 @@ func CloseTicket(ctx context.Context, cmd registry.CommandContext, reason *strin
 				var restError request.RestError
 				if errors.As(restError, &restError) && restError.StatusCode == 403 {
 					if err := dbclient.Client.AutoCloseExclude.ExcludeAll(ctx, cmd.GuildId()); err != nil {
-						sentry.ErrorWithContext(err, errorContext)
+						fmt.Print(err, errorContext)
 					}
 				}
 
@@ -206,7 +205,7 @@ func CloseTicket(ctx context.Context, cmd registry.CommandContext, reason *strin
 			var restError request.RestError
 			if errors.As(err, &restError) && restError.StatusCode == 403 {
 				if err := dbclient.Client.AutoCloseExclude.Exclude(ctx, ticket.GuildId, ticket.Id); err != nil {
-					sentry.ErrorWithContext(err, errorContext)
+					fmt.Print(err, errorContext)
 				}
 			}
 
@@ -221,25 +220,25 @@ func CloseTicket(ctx context.Context, cmd registry.CommandContext, reason *strin
 	}
 
 	if err := dbclient.Client.CloseRequest.Delete(ctx, ticket.GuildId, ticket.Id); err != nil {
-		sentry.ErrorWithContext(err, cmd.ToErrorContext())
+		fmt.Print(err, cmd.ToErrorContext())
 	}
 
 	// Delete join thread button
 	if ticket.IsThread && ticket.JoinMessageId != nil && settings.TicketNotificationChannel != nil {
 		_ = cmd.Worker().DeleteMessage(*settings.TicketNotificationChannel, *ticket.JoinMessageId)
 		if err := dbclient.Client.Tickets.SetJoinMessageId(ctx, ticket.GuildId, ticket.Id, nil); err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err, errorContext)
 		}
 	}
 
-	sendCloseEmbed(ctx, cmd, errorContext, member, settings, ticket, reason)
+	sendCloseEmbed(ctx, cmd, member, settings, ticket, reason)
 }
 
-func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorContext sentry.ErrorContext, member member.Member, settings database.Settings, ticket database.Ticket, reason *string) {
+func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, member member.Member, settings database.Settings, ticket database.Ticket, reason *string) {
 	// Send logs to archive channel
 	archiveChannelId, err := dbclient.Client.ArchiveChannel.Get(ctx, ticket.GuildId)
 	if err != nil {
-		sentry.ErrorWithContext(err, errorContext)
+		fmt.Print(err)
 	}
 
 	var archiveChannelExists bool
@@ -266,7 +265,7 @@ func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorConte
 
 		msg, err := cmd.Worker().CreateMessageComplex(*archiveChannelId, data)
 		if err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 		} else {
 			// Add message to archive
 			if err := dbclient.Client.ArchiveMessages.Set(ctx, ticket.GuildId, ticket.Id, *archiveChannelId, msg.Id); err != nil {
@@ -282,20 +281,20 @@ func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorConte
 	if ok {
 		guild, err := cmd.Guild()
 		if err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 			return
 		}
 
 		feedbackEnabled, err := dbclient.Client.FeedbackEnabled.Get(ctx, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 			return
 		}
 
 		// Only offer to take feedback if the user has sent a message
 		hasSentMessage, err := dbclient.Client.Participants.HasParticipated(ctx, cmd.GuildId(), ticket.Id, ticket.UserId)
 		if err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 			return
 		}
 
@@ -304,11 +303,11 @@ func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorConte
 			var restError request.RestError
 			if errors.As(err, &restError) {
 				if restError.StatusCode != 404 { // User left the server
-					sentry.ErrorWithContext(err, errorContext)
+					fmt.Print(err)
 					return
 				}
 			} else {
-				sentry.ErrorWithContext(err, errorContext)
+				fmt.Print(err)
 				return
 			}
 		}
@@ -316,7 +315,7 @@ func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorConte
 		// Only offer to take feedback if the user is *not* staff
 		permLevel, err := permission.GetPermissionLevel(ctx, utils.ToRetriever(cmd.Worker()), openerMember, cmd.GuildId())
 		if err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 			return
 		}
 
@@ -352,7 +351,7 @@ func sendCloseEmbed(ctx context.Context, cmd registry.CommandContext, errorConte
 		}
 
 		if _, err := cmd.Worker().CreateMessageComplex(dmChannel, data); err != nil {
-			sentry.ErrorWithContext(err, errorContext)
+			fmt.Print(err)
 		}
 	}
 }
@@ -366,7 +365,7 @@ func getDmChannel(ctx registry.CommandContext, userId uint64) (uint64, bool) {
 	cachedId, err := redis.GetDMChannel(userId, ctx.Worker().BotId)
 	if err != nil { // We can continue
 		if err != redis.ErrNotCached {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
+			fmt.Print(err, ctx.ToErrorContext())
 		}
 	} else { // We have it cached
 		if cachedId == nil {
@@ -381,18 +380,18 @@ func getDmChannel(ctx registry.CommandContext, userId uint64) (uint64, bool) {
 		// check for 403
 		if err, ok := err.(request.RestError); ok && err.StatusCode == 403 {
 			if err := redis.StoreNullDMChannel(userId, ctx.Worker().BotId); err != nil {
-				sentry.ErrorWithContext(err, ctx.ToErrorContext())
+				fmt.Print(err, ctx.ToErrorContext())
 			}
 
 			return 0, false
 		}
 
-		sentry.ErrorWithContext(err, ctx.ToErrorContext())
+		fmt.Print(err, ctx.ToErrorContext())
 		return 0, false
 	}
 
 	if err := redis.StoreDMChannel(userId, ch.Id, ctx.Worker().BotId); err != nil {
-		sentry.ErrorWithContext(err, ctx.ToErrorContext())
+		fmt.Print(err, ctx.ToErrorContext())
 	}
 
 	return ch.Id, true

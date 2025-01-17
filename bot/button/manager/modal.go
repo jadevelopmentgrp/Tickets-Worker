@@ -2,15 +2,12 @@ package manager
 
 import (
 	"context"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/jadevelopmentgrp/Tickets-Worker"
+	"time"
+
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
-	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 	"github.com/rxdn/gdl/objects/interaction"
-	"time"
 )
 
 func HandleModalInteraction(ctx context.Context, manager *ComponentInteractionManager, worker *worker.Context, data interaction.ModalSubmitInteraction, responseCh chan button.Response) bool {
@@ -33,7 +30,7 @@ func HandleModalInteraction(ctx context.Context, manager *ComponentInteractionMa
 
 	ctx, cancel := context.WithTimeout(ctx, handler.Properties().Timeout)
 
-	cc := cmdcontext.NewModalContext(ctx, worker, data, premiumTier, responseCh)
+	cc := cmdcontext.NewModalContext(ctx, worker, data, responseCh)
 	shouldExecute, canEdit := doPropertiesChecks(lookupCtx, data.GuildId.Value, cc, handler.Properties())
 	if shouldExecute {
 		go func() {

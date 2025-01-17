@@ -2,7 +2,7 @@ package redis
 
 import (
 	"fmt"
-	"github.com/TicketsBot/common/utils"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/utils"
 	"github.com/go-redis/redis/v8"
 	"time"
 )

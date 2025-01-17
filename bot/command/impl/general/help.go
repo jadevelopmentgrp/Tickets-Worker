@@ -5,9 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
 	"github.com/elliotchance/orderedmap"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -124,9 +123,7 @@ func (c HelpCommand) Execute(ctx registry.CommandContext) {
 		}
 	}
 
-	if ctx.PremiumTier() == premium.None {
-		embed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
-	}
+	embed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 
 	// Explicitly ignore error to fix 403 (Cannot send messages to this user)
 	_, _ = ctx.ReplyWith(command.NewEphemeralEmbedMessageResponse(embed))

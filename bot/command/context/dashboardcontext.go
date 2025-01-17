@@ -3,11 +3,10 @@ package context
 import (
 	"context"
 	"errors"
+	"fmt"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
@@ -27,7 +26,6 @@ type DashboardContext struct {
 	*StateCache
 	worker                     *worker.Context
 	guildId, channelId, userId uint64
-	premium                    premium.PremiumTier
 }
 
 var _ registry.CommandContext = (*DashboardContext)(nil)
@@ -36,7 +34,6 @@ func NewDashboardContext(
 	ctx context.Context,
 	worker *worker.Context,
 	guildId, channelId, userId uint64,
-	premium premium.PremiumTier,
 ) DashboardContext {
 	c := DashboardContext{
 		Context:   ctx,
@@ -44,7 +41,6 @@ func NewDashboardContext(
 		guildId:   guildId,
 		channelId: channelId,
 		userId:    userId,
-		premium:   premium,
 	}
 
 	c.Replyable = NewReplyable(&c)
@@ -77,10 +73,6 @@ func (c *DashboardContext) UserPermissionLevel(ctx context.Context) (permcache.P
 	return permcache.GetPermissionLevel(ctx, utils.ToRetriever(c.worker), member, c.guildId)
 }
 
-func (c *DashboardContext) PremiumTier() premium.PremiumTier {
-	return c.premium
-}
-
 func (c *DashboardContext) IsInteraction() bool {
 	return true
 }
@@ -101,7 +93,7 @@ func (c *DashboardContext) openDm() (uint64, bool) {
 	cachedId, err := redis.GetDMChannel(c.UserId(), c.Worker().BotId)
 	if err != nil { // We can continue
 		if err != redis.ErrNotCached {
-			sentry.ErrorWithContext(err, c.ToErrorContext())
+			fmt.Print(err, c.ToErrorContext())
 		}
 	} else { // We have it cached
 		if cachedId == nil {
@@ -116,18 +108,18 @@ func (c *DashboardContext) openDm() (uint64, bool) {
 		// check for 403
 		if err, ok := err.(request.RestError); ok && err.StatusCode == 403 {
 			if err := redis.StoreNullDMChannel(c.UserId(), c.Worker().BotId); err != nil {
-				sentry.ErrorWithContext(err, c.ToErrorContext())
+				fmt.Print(err, c.ToErrorContext())
 			}
 
 			return 0, false
 		}
 
-		sentry.ErrorWithContext(err, c.ToErrorContext())
+		fmt.Print(err, c.ToErrorContext())
 		return 0, false
 	}
 
 	if err := redis.StoreDMChannel(c.UserId(), ch.Id, c.Worker().BotId); err != nil {
-		sentry.ErrorWithContext(err, c.ToErrorContext())
+		fmt.Print(err, c.ToErrorContext())
 	}
 
 	return ch.Id, true
@@ -141,7 +133,7 @@ func (c *DashboardContext) ReplyWith(response command.MessageResponse) (message.
 
 	msg, err := c.Worker().CreateMessageComplex(channelId, response.IntoCreateMessageData())
 	if err != nil {
-		sentry.ErrorWithContext(err, c.ToErrorContext())
+		fmt.Print(err, c.ToErrorContext())
 	}
 
 	return msg, err

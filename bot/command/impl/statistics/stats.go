@@ -1,7 +1,7 @@
 package statistics
 
 import (
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
@@ -22,8 +22,7 @@ func (StatsCommand) Properties() registry.Properties {
 			StatsUserCommand{},
 			StatsServerCommand{},
 		},
-		Category:    command.Statistics,
-		PremiumOnly: true,
+		Category: command.Statistics,
 	}
 }
 

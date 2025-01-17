@@ -1,20 +1,20 @@
 package config
 
 import (
+	"time"
+
 	"github.com/caarlos0/env/v10"
 	"github.com/google/uuid"
 	"go.uber.org/zap/zapcore"
-	"time"
 )
 
 type (
 	WorkerMode string
 
 	Config struct {
-		DebugMode   string        `env:"WORKER_DEBUG"`
-		JsonLogs    bool          `env:"WORKER_JSON_LOGS" envDefault:"false"`
-		LogLevel    zapcore.Level `env:"WORKER_LOG_LEVEL" envDefault:"info"`
-		PremiumOnly bool          `env:"WORKER_PREMIUM_ONLY" envDefault:"false"`
+		DebugMode string        `env:"WORKER_DEBUG"`
+		JsonLogs  bool          `env:"WORKER_JSON_LOGS" envDefault:"false"`
+		LogLevel  zapcore.Level `env:"WORKER_LOG_LEVEL" envDefault:"info"`
 
 		WorkerMode WorkerMode `env:"WORKER_MODE"`
 
@@ -33,11 +33,6 @@ type (
 			Admins              []uint64 `env:"WORKER_BOT_ADMINS"`
 			Helpers             []uint64 `env:"WORKER_BOT_HELPERS"`
 		}
-
-		PremiumProxy struct {
-			Url string `env:"URL"`
-			Key string `env:"KEY"`
-		} `envPrefix:"WORKER_PROXY_"`
 
 		Archiver struct {
 			Url    string `env:"URL"`

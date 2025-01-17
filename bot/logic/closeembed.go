@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
@@ -142,7 +141,7 @@ func BuildCloseEmbed(
 	{
 		claimUserId, err := dbclient.Client.TicketClaims.Get(ctx, ticket.GuildId, ticket.Id)
 		if err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 
 		if claimUserId == 0 {
@@ -154,7 +153,7 @@ func BuildCloseEmbed(
 
 	colour, err := utils.GetColourForGuild(ctx, worker, customisation.Green, ticket.GuildId)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		colour = customisation.Green.Default()
 	}
 

@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"time"
 )
 

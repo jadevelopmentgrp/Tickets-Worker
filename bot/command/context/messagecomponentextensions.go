@@ -2,8 +2,8 @@ package context
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/TicketsBot/common/sentry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
@@ -57,7 +57,7 @@ func (e *MessageComponentExtensions) Edit(data command.MessageResponse) {
 	} else {
 		_, err := rest.EditOriginalInteractionResponse(context.Background(), e.interaction.Token, e.ctx.Worker().RateLimiter, e.ctx.Worker().BotId, data.IntoWebhookEditBody())
 		if err != nil {
-			sentry.LogWithContext(err, e.ctx.ToErrorContext())
+			fmt.Print(err, e.ctx.ToErrorContext())
 		}
 	}
 

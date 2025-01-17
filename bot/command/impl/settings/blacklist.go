@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
@@ -78,7 +77,7 @@ func (BlacklistCommand) Execute(ctx registry.CommandContext, id uint64) {
 
 		isBlacklisted, err := dbclient.Client.Blacklist.IsBlacklisted(ctx, ctx.GuildId(), id)
 		if err != nil {
-			sentry.ErrorWithContext(err, ctx.ToErrorContext())
+			fmt.Print(err, ctx.ToErrorContext())
 			return
 		}
 

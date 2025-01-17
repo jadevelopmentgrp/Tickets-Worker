@@ -2,10 +2,10 @@ package messagequeue
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/TicketsBot/common/closerequest"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/closerequest"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
@@ -31,14 +31,14 @@ func ListenCloseRequestTimer() {
 			// get ticket
 			ticket, err := dbclient.Client.Tickets.Get(ctx, request.TicketId, request.GuildId)
 			if err != nil {
-				sentry.Error(err)
+				fmt.Print(err)
 				return
 			}
 
 			// get worker
 			worker, err := buildContext(ctx, ticket, cache.Client)
 			if err != nil {
-				sentry.Error(err)
+				fmt.Print(err)
 				return
 			}
 
@@ -47,14 +47,7 @@ func ListenCloseRequestTimer() {
 				return
 			}
 
-			// get premium status
-			premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, ticket.GuildId, true, worker.Token, worker.RateLimiter)
-			if err != nil {
-				sentry.Error(err)
-				return
-			}
-
-			cc := cmdcontext.NewAutoCloseContext(ctx, worker, ticket.GuildId, *ticket.ChannelId, request.UserId, premiumTier)
+			cc := cmdcontext.NewAutoCloseContext(ctx, worker, ticket.GuildId, *ticket.ChannelId, request.UserId)
 			logic.CloseTicket(ctx, cc, request.Reason, true)
 		}()
 	}

@@ -3,9 +3,8 @@ package context
 import (
 	"context"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
@@ -23,7 +22,6 @@ type AutoCloseContext struct {
 	*StateCache
 	worker                     *worker.Context
 	guildId, channelId, userId uint64
-	premium                    premium.PremiumTier
 }
 
 var _ registry.CommandContext = (*AutoCloseContext)(nil)
@@ -32,7 +30,6 @@ func NewAutoCloseContext(
 	ctx context.Context,
 	worker *worker.Context,
 	guildId, channelId, userId uint64,
-	premium premium.PremiumTier,
 ) *AutoCloseContext {
 	c := AutoCloseContext{
 		Context:   ctx,
@@ -40,7 +37,6 @@ func NewAutoCloseContext(
 		guildId:   guildId,
 		channelId: channelId,
 		userId:    userId,
-		premium:   premium,
 	}
 
 	c.Replyable = NewReplyable(&c)
@@ -67,10 +63,6 @@ func (c *AutoCloseContext) UserId() uint64 {
 // TODO: Could this be dangerous? Don't think so, since this context is only used for closing
 func (c *AutoCloseContext) UserPermissionLevel(ctx context.Context) (permcache.PermissionLevel, error) {
 	return permcache.Admin, nil
-}
-
-func (c *AutoCloseContext) PremiumTier() premium.PremiumTier {
-	return c.premium
 }
 
 func (c *AutoCloseContext) IsInteraction() bool {

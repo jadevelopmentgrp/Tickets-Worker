@@ -1,8 +1,8 @@
 package integrations
 
 import (
-	"github.com/TicketsBot/common/integrations/bloxlink"
-	"github.com/TicketsBot/common/webproxy"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/integrations/bloxlink"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/webproxy"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 )

@@ -3,23 +3,19 @@ package manager
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/jadevelopmentgrp/Tickets-Worker"
+	"time"
+
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	cmdregistry "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
-	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
 	"github.com/rxdn/gdl/objects/interaction"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"time"
 )
 
 // Returns whether the handler may edit the message
@@ -36,35 +32,14 @@ func HandleInteraction(ctx context.Context, manager *ComponentInteractionManager
 	lookupCtx, cancelLookupCtx := context.WithTimeout(ctx, time.Second*2)
 	defer cancelLookupCtx()
 
-	// Fetch premium tier
-	// TODO: Re-architecture system to tie DMs to guilds
-	premiumTier, err := getPremiumTier(lookupCtx, worker, data.GuildId.Value)
-	if err != nil {
-		// TODO: Better handling
-		// Allow executing to continue, assuming no premium
-		sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
-
-		premiumTier = premium.None
-	}
-
-	if premiumTier == premium.None && config.Conf.PremiumOnly {
-		return false
-	}
-
 	var cc cmdregistry.InteractionContext
 	switch data.Data.Type() {
 	case component.ComponentButton:
-		cc = cmdcontext.NewButtonContext(ctx, worker, data, premiumTier, responseCh)
+		cc = cmdcontext.NewButtonContext(ctx, worker, data, responseCh)
 	case component.ComponentSelectMenu:
-		cc = cmdcontext.NewSelectMenuContext(ctx, worker, data, premiumTier, responseCh)
+		cc = cmdcontext.NewSelectMenuContext(ctx, worker, data, responseCh)
 	default:
-		sentry.ErrorWithContext(fmt.Errorf("invalid message component type: %d", data.Data.ComponentType), errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
+		fmt.Errorf("invalid message component type: %d", data.Data.ComponentType)
 		return false
 	}
 
@@ -76,24 +51,18 @@ func HandleInteraction(ctx context.Context, manager *ComponentInteractionManager
 
 	// Check not if the context has been cancelled
 	if err := lookupCtx.Err(); err != nil {
-		errorId := sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
+		fmt.Print(err, data.GuildId.Value, data.ChannelId)
 
-		cc.ReplyRaw(customisation.Red, "Error", fmt.Sprintf("An error occurred while processing this request (Error ID `%s`)", errorId))
+		cc.ReplyRaw(customisation.Red, "Error", fmt.Sprintf("An error occurred while processing this request."))
 		return false
 	}
 
 	// Check if the user is blacklisted at guild / global level
 	userBlacklisted, err := cc.IsBlacklisted(lookupCtx)
 	if err != nil {
-		errorId := sentry.ErrorWithContext(err, errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
+		fmt.Print(err, data.GuildId.Value, data.ChannelId)
 
-		cc.ReplyRaw(customisation.Red, "Error", fmt.Sprintf("An error occurred while processing this request (Error ID `%s`)", errorId))
+		cc.ReplyRaw(customisation.Red, "Error", fmt.Sprintf("An error occurred while processing this request."))
 		return false
 	}
 
@@ -151,29 +120,8 @@ func HandleInteraction(ctx context.Context, manager *ComponentInteractionManager
 
 		return canEdit
 	default:
-		sentry.ErrorWithContext(fmt.Errorf("invalid message component type: %d", data.Data.ComponentType), errorcontext.WorkerErrorContext{
-			Guild:   data.GuildId.Value,
-			Channel: data.ChannelId,
-		})
+		fmt.Errorf("invalid message component type: %d", data.Data.ComponentType)
 		return false
-	}
-}
-
-func getPremiumTier(ctx context.Context, worker *worker.Context, guildId uint64) (premium.PremiumTier, error) {
-	// Psuedo premium if DM command
-	if guildId == 0 {
-		if worker.IsWhitelabel {
-			return premium.Whitelabel, nil
-		} else {
-			return premium.Premium, nil
-		}
-	} else {
-		premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, guildId, true, worker.Token, worker.RateLimiter)
-		if err != nil {
-			return premium.None, err
-		}
-
-		return premiumTier, nil
 	}
 }
 
@@ -181,7 +129,7 @@ func doPropertiesChecks(ctx context.Context, guildId uint64, cmd cmdregistry.Com
 	if properties.PermissionLevel > permission.Everyone {
 		permLevel, err := cmd.UserPermissionLevel(ctx)
 		if err != nil {
-			sentry.ErrorWithContext(err, cmd.ToErrorContext())
+			fmt.Print(err, cmd.ToErrorContext())
 			return false, false
 		}
 

@@ -5,10 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/common/model"
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/model"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -126,7 +125,7 @@ func (CloseRequestCommand) Execute(ctx registry.CommandContext, closeDelay *int,
 		return
 	}
 
-	if !ticket.IsThread && ctx.PremiumTier() > premium.None {
+	if !ticket.IsThread {
 		if err := dbclient.Client.CategoryUpdateQueue.Add(ctx, ctx.GuildId(), ticket.Id, model.TicketStatusPending); err != nil {
 			ctx.HandleError(err)
 			return

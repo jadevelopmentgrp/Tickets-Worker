@@ -2,11 +2,11 @@ package tickets
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -55,7 +55,7 @@ func (ReopenCommand) AutoCompleteHandler(data interaction.ApplicationCommandAuto
 
 	tickets, err := dbclient.Client.Tickets.GetClosedByUserPrefixed(ctx, data.GuildId.Value, data.Member.User.Id, value, 25)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return nil
 	}
 

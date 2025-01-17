@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/TicketsBot/database"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"

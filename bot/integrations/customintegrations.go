@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/TicketsBot/database"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/prometheus"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"

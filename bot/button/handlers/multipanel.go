@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"errors"
-	"github.com/TicketsBot/common/sentry"
+	"fmt"
+
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
@@ -37,7 +38,7 @@ func (h *MultiPanelHandler) Execute(ctx *context.SelectMenuContext) {
 
 	panel, ok, err := dbclient.Client.Panel.GetByCustomId(ctx, ctx.GuildId(), panelCustomId)
 	if err != nil {
-		sentry.Error(err) // TODO: Proper context
+		fmt.Print(err) // TODO: Proper context
 		return
 	}
 

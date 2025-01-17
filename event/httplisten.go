@@ -3,9 +3,13 @@ package event
 import (
 	"context"
 	"fmt"
-	"github.com/TicketsBot/common/eventforwarding"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/jadevelopmentgrp/Tickets-Worker"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/eventforwarding"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	btn_manager "github.com/jadevelopmentgrp/Tickets-Worker/bot/button/manager"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
@@ -13,15 +17,11 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/prometheus"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	"github.com/rxdn/gdl/cache"
 	"github.com/rxdn/gdl/objects/channel/message"
 	"github.com/rxdn/gdl/objects/interaction"
 	"github.com/rxdn/gdl/rest"
 	"github.com/sirupsen/logrus"
-	"strings"
-	"time"
 )
 
 type response struct {
@@ -75,7 +75,7 @@ func eventHandler(cache *cache.PgCache) func(*gin.Context) {
 	return func(c *gin.Context) {
 		var event eventforwarding.Event
 		if err := c.BindJSON(&event); err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 			c.JSON(400, newErrorResponse(err))
 			return
 		}
@@ -285,7 +285,7 @@ func handleApplicationCommandResponseAfterDefer(interactionData interaction.Appl
 				}
 
 				if _, err := rest.CreateFollowupMessage(context.Background(), interactionData.Token, worker.RateLimiter, worker.BotId, restData); err != nil {
-					sentry.ErrorWithContext(err, NewApplicationCommandInteractionErrorContext(interactionData))
+					fmt.Print(err, NewApplicationCommandInteractionErrorContext(interactionData))
 					return
 				}
 			} else {
@@ -299,7 +299,7 @@ func handleApplicationCommandResponseAfterDefer(interactionData interaction.Appl
 				}
 
 				if _, err := rest.EditOriginalInteractionResponse(context.Background(), interactionData.Token, worker.RateLimiter, worker.BotId, restData); err != nil {
-					sentry.ErrorWithContext(err, NewApplicationCommandInteractionErrorContext(interactionData))
+					fmt.Print(err, NewApplicationCommandInteractionErrorContext(interactionData))
 					return
 				}
 			}
@@ -330,7 +330,7 @@ func handleButtonResponseAfterDefer(interactionData interaction.InteractionMetad
 			}
 
 			if err := data.HandleDeferred(interactionData, worker); err != nil {
-				sentry.ErrorWithContext(err, NewMessageComponentInteractionErrorContext(interactionData))
+				fmt.Print(err, NewMessageComponentInteractionErrorContext(interactionData))
 			}
 		}
 	}

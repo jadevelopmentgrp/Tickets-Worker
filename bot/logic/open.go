@@ -8,11 +8,9 @@ import (
 	"strings"
 	"time"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -34,12 +32,6 @@ import (
 )
 
 func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *database.Panel, subject string, formData map[database.FormInput]string) (database.Ticket, error) {
-	rootSpan := sentry.StartSpan(ctx, "Ticket open")
-	rootSpan.SetTag("guild", strconv.FormatUint(cmd.GuildId(), 10))
-	defer rootSpan.Finish()
-
-	span := sentry.StartSpan(rootSpan.Context(), "Check ticket limit")
-
 	lockCtx, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
 
@@ -76,17 +68,11 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 		return database.Ticket{}, fmt.Errorf("ticket limit reached")
 	}
 
-	span.Finish()
-
-	span = sentry.StartSpan(rootSpan.Context(), "Ticket ratelimit")
-
 	ok, err := redis.TakeTicketRateLimitToken(redis.Client, cmd.GuildId())
 	if err != nil {
 		cmd.HandleError(err)
 		return database.Ticket{}, err
 	}
-
-	span.Finish()
 
 	if !ok {
 		cmd.Reply(customisation.Red, i18n.Error, i18n.MessageOpenRatelimited)
@@ -94,27 +80,10 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 	}
 
 	// Ensure that the panel isn't disabled
-	span = sentry.StartSpan(rootSpan.Context(), "Check if panel is disabled")
 	if panel != nil && panel.ForceDisabled {
-		// Build premium command mention
-		var premiumCommand string
-		commands, err := command.LoadCommandIds(cmd.Worker(), cmd.Worker().BotId)
-		if err != nil {
-			sentry.Error(err)
-			return database.Ticket{}, err
-		}
-
-		if id, ok := commands["premium"]; ok {
-			premiumCommand = fmt.Sprintf("</premium:%d>", id)
-		} else {
-			premiumCommand = "`/premium`"
-		}
-
-		cmd.Reply(customisation.Red, i18n.Error, i18n.MessageOpenPanelForceDisabled, premiumCommand)
+		cmd.Reply(customisation.Red, i18n.Error, i18n.MessageOpenPanelForceDisabled)
 		return database.Ticket{}, nil
 	}
-
-	span.Finish()
 
 	if panel != nil && panel.Disabled {
 		cmd.Reply(customisation.Red, i18n.Error, i18n.MessageOpenPanelDisabled)
@@ -152,18 +121,15 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 		}
 	}
 
-	span = sentry.StartSpan(rootSpan.Context(), "Load settings")
 	settings, err := cmd.Settings()
 	if err != nil {
 		cmd.HandleError(err)
 		return database.Ticket{}, err
 	}
-	span.Finish()
 
 	isThread := settings.UseThreads
 
 	// Check if the parent channel is an announcement channel
-	span = sentry.StartSpan(rootSpan.Context(), "Check if parent channel is announcement channel")
 	if isThread {
 		panelChannel, err := cmd.Channel()
 		if err != nil {
@@ -176,7 +142,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			return database.Ticket{}, nil
 		}
 	}
-	span.Finish()
 
 	// Check if the user has Send Messages in Threads
 	if isThread && cmd.InteractionMetadata().Member != nil {
@@ -188,7 +153,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 	}
 
 	// If we're using a panel, then we need to create the ticket in the specified category
-	span = sentry.StartSpan(rootSpan.Context(), "Get category")
 	var category uint64
 	if panel != nil && panel.TargetCategory != 0 {
 		category = panel.TargetCategory
@@ -200,11 +164,9 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			return database.Ticket{}, err
 		}
 	}
-	span.Finish()
 
 	useCategory := category != 0 && !isThread
 	if useCategory {
-		span := sentry.StartSpan(rootSpan.Context(), "Check if category exists")
 		// Check if the category still exists
 		_, err := cmd.Worker().GetChannel(category)
 		if err != nil {
@@ -218,7 +180,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 				} // TODO: Else, set panel category to 0
 			}
 		}
-		span.Finish()
 	}
 
 	// Generate subject
@@ -258,13 +219,11 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 	}
 
 	// Create channel
-	span = sentry.StartSpan(rootSpan.Context(), "Create ticket in database")
 	ticketId, err := dbclient.Client.Tickets.Create(ctx, cmd.GuildId(), cmd.UserId(), isThread, panelId)
 	if err != nil {
 		cmd.HandleError(err)
 		return database.Ticket{}, err
 	}
-	span.Finish()
 
 	unlocked = true
 	if _, err := mu.UnlockContext(ctx); err != nil && !errors.Is(err, redis.ErrLockExpired) {
@@ -272,18 +231,15 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 		return database.Ticket{}, err
 	}
 
-	span = sentry.StartSpan(rootSpan.Context(), "Generate channel name")
 	name, err := GenerateChannelName(ctx, cmd, panel, ticketId, cmd.UserId(), nil)
 	if err != nil {
 		cmd.HandleError(err)
 		return database.Ticket{}, err
 	}
-	span.Finish()
 
 	var ch channel.Channel
 	var joinMessageId *uint64
 	if isThread {
-		span = sentry.StartSpan(rootSpan.Context(), "Create thread")
 		ch, err = cmd.Worker().CreatePrivateThread(cmd.ChannelId(), name, uint16(settings.ThreadArchiveDuration), false)
 		if err != nil {
 			cmd.HandleError(err)
@@ -295,21 +251,15 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 			return database.Ticket{}, err
 		}
-		span.Finish()
 
 		// Join ticket
-		span = sentry.StartSpan(rootSpan.Context(), "Add user to thread")
 		if err := cmd.Worker().AddThreadMember(ch.Id, cmd.UserId()); err != nil {
 			cmd.HandleError(err)
 		}
-		span.Finish()
 
 		if settings.TicketNotificationChannel != nil {
-			span := sentry.StartSpan(rootSpan.Context(), "Send message to ticket notification channel")
 
-			buildSpan := sentry.StartSpan(span.Context(), "Build ticket notification message")
-			data := BuildJoinThreadMessage(ctx, cmd.Worker(), cmd.GuildId(), cmd.UserId(), ticketId, panel, nil, cmd.PremiumTier())
-			buildSpan.Finish()
+			data := BuildJoinThreadMessage(ctx, cmd.Worker(), cmd.GuildId(), cmd.UserId(), ticketId, panel, nil)
 
 			// TODO: Check if channel exists
 			if msg, err := cmd.Worker().CreateMessageComplex(*settings.TicketNotificationChannel, data.IntoCreateMessageData()); err == nil {
@@ -317,16 +267,13 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			} else {
 				cmd.HandleError(err)
 			}
-			span.Finish()
 		}
 	} else {
-		span = sentry.StartSpan(rootSpan.Context(), "Build permission overwrites")
 		overwrites, err := CreateOverwrites(ctx, cmd, cmd.UserId(), panel)
 		if err != nil {
 			cmd.HandleError(err)
 			return database.Ticket{}, err
 		}
-		span.Finish()
 
 		data := rest.CreateChannelData{
 			Name:                 name,
@@ -339,7 +286,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			data.ParentId = category
 		}
 
-		span = sentry.StartSpan(rootSpan.Context(), "Create channel")
 		tmp, err := cmd.Worker().CreateGuildChannel(cmd.GuildId(), data)
 		if err != nil { // Bot likely doesn't have permission
 			// To prevent tickets getting in a glitched state, we should mark it as closed (or delete it completely?)
@@ -367,7 +313,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 			return database.Ticket{}, err
 		}
-		span.Finish()
 
 		// TODO: Remove
 		if tmp.Id == 0 {
@@ -390,9 +335,7 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 	// Let the user know the ticket has been opened
 	group.Go(func() error {
-		span := sentry.StartSpan(rootSpan.Context(), "Reply to interaction")
 		cmd.Reply(customisation.Green, i18n.Ticket, i18n.MessageTicketOpened, ch.Mention())
-		span.Finish()
 		return nil
 	})
 
@@ -412,7 +355,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 	// Welcome message
 	group.Go(func() error {
-		span = sentry.StartSpan(rootSpan.Context(), "Fetch custom integration placeholders")
 
 		externalPlaceholderCtx, cancel := context.WithTimeout(ctx, time.Second*5)
 		defer cancel()
@@ -423,18 +365,13 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			// A failing integration should not block the ticket creation process.
 			cmd.HandleError(err)
 		}
-		span.Finish()
 
-		span = sentry.StartSpan(rootSpan.Context(), "Send welcome message")
 		welcomeMessageId, err := SendWelcomeMessage(ctx, cmd, ticket, subject, panel, formData, additionalPlaceholders)
-		span.Finish()
 		if err != nil {
 			return err
 		}
 
 		// Update message IDs in DB
-		span = sentry.StartSpan(rootSpan.Context(), "Update ticket properties in database")
-		defer span.Finish()
 		if err := dbclient.Client.Tickets.SetMessageIds(ctx, cmd.GuildId(), ticketId, welcomeMessageId, joinMessageId); err != nil {
 			return err
 		}
@@ -444,9 +381,7 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 	// Send mentions
 	group.Go(func() error {
-		span := sentry.StartSpan(rootSpan.Context(), "Load guild metadata from database")
 		metadata, err := dbclient.Client.GuildMetadata.Get(ctx, cmd.GuildId())
-		span.Finish()
 		if err != nil {
 			return err
 		}
@@ -465,9 +400,7 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 					content += fmt.Sprintf("<@&%d>", *metadata.OnCallRole)
 				}
 
-				span := sentry.StartSpan(rootSpan.Context(), "Get teams from database")
 				teams, err := dbclient.Client.PanelTeams.GetTeams(ctx, panel.PanelId)
-				span.Finish()
 				if err != nil {
 					return err
 				} else {
@@ -482,9 +415,7 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 
 		if panel != nil {
 			// roles
-			span := sentry.StartSpan(rootSpan.Context(), "Get panel role mentions from database")
 			roles, err := dbclient.Client.PanelRoleMentions.GetRoles(ctx, panel.PanelId)
-			span.Finish()
 			if err != nil {
 				return err
 			} else {
@@ -498,9 +429,7 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 			}
 
 			// user
-			span = sentry.StartSpan(rootSpan.Context(), "Get panel user mention setting from database")
 			shouldMentionUser, err := dbclient.Client.PanelUserMention.ShouldMentionUser(ctx, panel.PanelId)
-			span.Finish()
 			if err != nil {
 				return err
 			} else {
@@ -515,7 +444,6 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 				content = content[:2000]
 			}
 
-			span := sentry.StartSpan(rootSpan.Context(), "Send ping message")
 			pingMessage, err := cmd.Worker().CreateMessageComplex(ch.Id, rest.CreateMessageData{
 				Content: content,
 				AllowedMentions: message.AllowedMention{
@@ -526,16 +454,13 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 					},
 				},
 			})
-			span.Finish()
 
 			if err != nil {
 				return err
 			}
 
 			// error is likely to be a permission error
-			span = sentry.StartSpan(span.Context(), "Delete ping message")
 			_ = cmd.Worker().DeleteMessage(ch.Id, pingMessage.Id)
-			span.Finish()
 		}
 
 		return nil
@@ -544,9 +469,9 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 	// Create webhook
 	// TODO: Create webhook on use, rather than on ticket creation.
 	// TODO: Webhooks for threads should be created on the parent channel.
-	if cmd.PremiumTier() > premium.None && !ticket.IsThread {
+	if !ticket.IsThread {
 		group.Go(func() error {
-			return createWebhook(rootSpan.Context(), cmd, ticketId, cmd.GuildId(), ch.Id)
+			return createWebhook(ctx, cmd, ticketId, cmd.GuildId(), ch.Id)
 		})
 	}
 
@@ -555,12 +480,10 @@ func OpenTicket(ctx context.Context, cmd registry.InteractionContext, panel *dat
 		return database.Ticket{}, err
 	}
 
-	span = sentry.StartSpan(rootSpan.Context(), "Increment statsd counters")
 	statsd.Client.IncrementKey(statsd.KeyTickets)
 	if panel == nil {
 		statsd.Client.IncrementKey(statsd.KeyOpenCommand)
 	}
-	span.Finish()
 
 	return ticket, nil
 }
@@ -578,7 +501,6 @@ func checkChannelLimitAndDetermineParentId(
 	settings database.Settings,
 	canRetry bool,
 ) (uint64, error) {
-	span := sentry.StartSpan(ctx, "Check < 500 channels")
 	channels, _ := worker.GetGuildChannels(guildId)
 
 	// 500 guild limit check
@@ -603,11 +525,8 @@ func checkChannelLimitAndDetermineParentId(
 		}
 	}
 
-	span.Finish()
-
 	// Make sure there's not > 50 channels in a category
 	if categoryId != 0 {
-		span := sentry.StartSpan(ctx, "Check < 50 channels in category")
 		categoryChildrenCount := countRealChannels(channels, categoryId)
 
 		if categoryChildrenCount >= 50 {
@@ -637,7 +556,6 @@ func checkChannelLimitAndDetermineParentId(
 					categoryId = *settings.OverflowCategoryId
 
 					// Verify that the overflow category still exists
-					span := sentry.StartSpan(span.Context(), "Check if overflow category exists")
 					if !utils.ContainsFunc(channels, func(c channel.Channel) bool {
 						return c.Id == categoryId
 					}) {
@@ -654,7 +572,6 @@ func checkChannelLimitAndDetermineParentId(
 						return 0, errCategoryChannelLimitReached
 					}
 
-					span.Finish()
 				}
 			} else {
 				return 0, errCategoryChannelLimitReached
@@ -678,7 +595,7 @@ func refreshCachedChannels(ctx context.Context, worker *worker.Context, guildId 
 func getTicketLimit(ctx context.Context, cmd registry.CommandContext) (bool, int) {
 	isStaff, err := cmd.UserPermissionLevel(ctx)
 	if err != nil {
-		sentry.ErrorWithContext(err, cmd.ToErrorContext())
+		fmt.Print(err, cmd.ToErrorContext())
 		return true, 1 // TODO: Stop flow
 	}
 
@@ -703,7 +620,7 @@ func getTicketLimit(ctx context.Context, cmd registry.CommandContext) (bool, int
 	})
 
 	if err := group.Wait(); err != nil {
-		sentry.ErrorWithContext(err, cmd.ToErrorContext())
+		fmt.Print(err, cmd.ToErrorContext())
 		return true, 1
 	}
 
@@ -713,12 +630,8 @@ func getTicketLimit(ctx context.Context, cmd registry.CommandContext) (bool, int
 func createWebhook(ctx context.Context, c registry.CommandContext, ticketId int, guildId, channelId uint64) error {
 	// TODO: Re-add permission check
 	//if permission.HasPermissionsChannel(ctx.Shard, ctx.GuildId, ctx.Shard.SelfId(), channelId, permission.ManageWebhooks) { // Do we actually need this?
-	root := sentry.StartSpan(ctx, "Create webhook")
-	defer root.Finish()
 
-	span := sentry.StartSpan(root.Context(), "Get bot user")
 	self, err := c.Worker().Self()
-	span.Finish()
 	if err != nil {
 		return err
 	}
@@ -728,11 +641,9 @@ func createWebhook(ctx context.Context, c registry.CommandContext, ticketId int,
 		Avatar:   self.AvatarUrl(256),
 	}
 
-	span = sentry.StartSpan(root.Context(), "Get bot user")
 	webhook, err := c.Worker().CreateWebhook(channelId, data)
-	span.Finish()
 	if err != nil {
-		sentry.ErrorWithContext(err, c.ToErrorContext())
+		fmt.Print(err, c.ToErrorContext())
 		return nil // Silently fail
 	}
 
@@ -741,8 +652,6 @@ func createWebhook(ctx context.Context, c registry.CommandContext, ticketId int,
 		Token: webhook.Token,
 	}
 
-	span = sentry.StartSpan(root.Context(), "Store webhook in database")
-	defer span.Finish()
 	if err := dbclient.Client.Webhooks.Create(ctx, guildId, ticketId, dbWebhook); err != nil {
 		return err
 	}
@@ -1024,9 +933,8 @@ func BuildJoinThreadMessage(
 	ticketId int,
 	panel *database.Panel,
 	staffMembers []uint64,
-	premiumTier premium.PremiumTier,
 ) command.MessageResponse {
-	return buildJoinThreadMessage(ctx, worker, guildId, openerId, ticketId, panel, staffMembers, premiumTier, false)
+	return buildJoinThreadMessage(ctx, worker, guildId, openerId, ticketId, panel, staffMembers, false)
 }
 
 func BuildThreadReopenMessage(
@@ -1036,9 +944,8 @@ func BuildThreadReopenMessage(
 	ticketId int,
 	panel *database.Panel,
 	staffMembers []uint64,
-	premiumTier premium.PremiumTier,
 ) command.MessageResponse {
-	return buildJoinThreadMessage(ctx, worker, guildId, openerId, ticketId, panel, staffMembers, premiumTier, true)
+	return buildJoinThreadMessage(ctx, worker, guildId, openerId, ticketId, panel, staffMembers, true)
 }
 
 // TODO: Translations
@@ -1049,7 +956,6 @@ func buildJoinThreadMessage(
 	ticketId int,
 	panel *database.Panel,
 	staffMembers []uint64,
-	premiumTier premium.PremiumTier,
 	fromReopen bool,
 ) command.MessageResponse {
 	var colour customisation.Colour

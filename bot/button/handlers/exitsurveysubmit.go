@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/database"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"

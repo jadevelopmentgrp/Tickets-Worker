@@ -1,9 +1,8 @@
 package registry
 
 import (
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -30,7 +29,6 @@ type CommandContext interface {
 	UserId() uint64
 
 	UserPermissionLevel(ctx context.Context) (permcache.PermissionLevel, error)
-	PremiumTier() premium.PremiumTier
 	IsInteraction() bool
 	Source() Source
 	ToErrorContext() errorcontext.WorkerErrorContext

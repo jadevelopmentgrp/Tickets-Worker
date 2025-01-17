@@ -1,7 +1,9 @@
 package handlers
 
 import (
-	"github.com/TicketsBot/common/permission"
+	"time"
+
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
@@ -9,7 +11,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	prem "github.com/jadevelopmentgrp/Tickets-Worker/bot/premium"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
-	"time"
 )
 
 type PremiumKeyButtonHandler struct{}

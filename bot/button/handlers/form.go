@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+	"fmt"
+	"strings"
+
+	database "github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
@@ -11,7 +13,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
-	"strings"
 )
 
 type FormHandler struct{}
@@ -36,7 +37,7 @@ func (h *FormHandler) Execute(ctx *context.ModalContext) {
 	// Form IDs aren't unique to a panel, so we submit the modal with a custom id of `form_panelcustomid`
 	panel, ok, err := dbclient.Client.Panel.GetByCustomId(ctx, ctx.GuildId(), customId)
 	if err != nil {
-		sentry.Error(err) // TODO: Proper context
+		fmt.Print(err) // TODO: Proper context
 		return
 	}
 

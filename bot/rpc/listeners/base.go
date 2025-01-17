@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 	"github.com/rxdn/gdl/cache"

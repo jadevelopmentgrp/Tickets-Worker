@@ -1,7 +1,7 @@
 package button
 
 import (
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/rxdn/gdl/objects/interaction"
 )
 

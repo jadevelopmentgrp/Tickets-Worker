@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
@@ -28,7 +28,6 @@ func (StatsUserCommand) Properties() registry.Properties {
 		Aliases:         []string{"statistics"},
 		PermissionLevel: permission.Support,
 		Category:        command.Statistics,
-		PremiumOnly:     true,
 		Arguments: command.Arguments(
 			command.NewRequiredArgument("user", "User whose statistics to retrieve", interaction.OptionTypeUser, i18n.MessageInvalidUser),
 		),

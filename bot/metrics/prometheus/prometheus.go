@@ -1,7 +1,7 @@
 package prometheus
 
 import (
-	"github.com/TicketsBot/database"
+	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"strconv"

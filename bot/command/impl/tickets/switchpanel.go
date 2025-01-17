@@ -2,12 +2,12 @@ package tickets
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
@@ -171,13 +171,13 @@ func (SwitchPanelCommand) Execute(ctx *cmdcontext.SlashCommandContext, panelId i
 		if ticket.JoinMessageId != nil && settings.TicketNotificationChannel != nil {
 			threadStaff, err := logic.GetStaffInThread(ctx.Context, ctx.Worker(), ticket, *ticket.ChannelId)
 			if err != nil {
-				sentry.ErrorWithContext(err, ctx.ToErrorContext()) // Only log
+				fmt.Print(err, ctx.ToErrorContext()) // Only log
 				return
 			}
 
-			msg := logic.BuildJoinThreadMessage(ctx.Context, ctx.Worker(), ctx.GuildId(), ticket.UserId, ticket.Id, &panel, threadStaff, ctx.PremiumTier())
+			msg := logic.BuildJoinThreadMessage(ctx.Context, ctx.Worker(), ctx.GuildId(), ticket.UserId, ticket.Id, &panel, threadStaff)
 			if _, err := ctx.Worker().EditMessage(*settings.TicketNotificationChannel, *ticket.JoinMessageId, msg.IntoEditMessageData()); err != nil {
-				sentry.ErrorWithContext(err, ctx.ToErrorContext()) // Only log
+				fmt.Print(err, ctx.ToErrorContext()) // Only log
 				return
 			}
 		}
@@ -239,7 +239,7 @@ func (SwitchPanelCommand) AutoCompleteHandler(data interaction.ApplicationComman
 
 	panels, err := dbclient.Client.Panel.GetByGuild(ctx, data.GuildId.Value)
 	if err != nil {
-		sentry.Error(err) // TODO: Context
+		fmt.Print(err) // TODO: Context
 		return nil
 	}
 

@@ -3,7 +3,7 @@ package redis
 import (
 	"errors"
 	"fmt"
-	"github.com/TicketsBot/common/utils"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/utils"
 	"github.com/go-redis/redis/v8"
 	"strconv"
 	"time"

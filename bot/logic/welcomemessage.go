@@ -9,11 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TicketsBot/common/integrations/bloxlink"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
-	"github.com/TicketsBot/worker"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/integrations/bloxlink"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -61,9 +59,7 @@ func SendWelcomeMessage(
 			formAnswersEmbed.AddField(field.Name, utils.EscapeMarkdown(field.Value), field.Inline)
 		}
 
-		if cmd.PremiumTier() == premium.None {
-			formAnswersEmbed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
-		}
+		formAnswersEmbed.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 
 		embeds = append(embeds, formAnswersEmbed)
 	}
@@ -146,7 +142,7 @@ func BuildWelcomeMessageEmbed(
 			return nil, err
 		}
 
-		e := BuildCustomEmbed(ctx, cmd.Worker(), ticket, data, fields, cmd.PremiumTier() == premium.None, additionalPlaceholders)
+		e := BuildCustomEmbed(ctx, cmd.Worker(), ticket, data, fields, additionalPlaceholders)
 		return e, nil
 	}
 }
@@ -235,7 +231,7 @@ func DoPlaceholderSubstitutions(
 	}
 
 	if err := group.Wait(); err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 	}
 
 	return message
@@ -385,66 +381,30 @@ var substitutions = map[string]PlaceholderSubstitutionFunc{
 		return fmt.Sprintf("<t:%d:f>", time.Now().Unix())
 	},
 	"first_response_time_weekly": func(ctx context.Context, worker *worker.Context, ticket database.Ticket) string {
-		if !worker.IsWhitelabel { // If whitelabel, the bot must be premium, so we don't need to do extra checks
-			premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, ticket.GuildId, true, worker.Token, worker.RateLimiter)
-			if err != nil {
-				sentry.Error(err)
-				return ""
-			}
-
-			if premiumTier == premium.None {
-				return ""
-			}
-		}
-
 		data, err := dbclient.Analytics.GetFirstResponseTimeStats(ctx, ticket.GuildId)
 		if err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 			return ""
 		}
 
 		return utils.FormatNullableTime(data.Weekly)
 	},
 	"first_response_time_monthly": func(ctx context.Context, worker *worker.Context, ticket database.Ticket) string {
-		if !worker.IsWhitelabel { // If whitelabel, the bot must be premium, so we don't need to do extra checks
-			premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, ticket.GuildId, true, worker.Token, worker.RateLimiter)
-			if err != nil {
-				sentry.Error(err)
-				return ""
-			}
-
-			if premiumTier == premium.None {
-				return ""
-			}
-		}
-
 		data, err := dbclient.Analytics.GetFirstResponseTimeStats(ctx, ticket.GuildId)
 		if err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 			return ""
 		}
 
 		return utils.FormatNullableTime(data.Monthly)
 	},
 	"first_response_time_all_time": func(ctx context.Context, worker *worker.Context, ticket database.Ticket) string {
-		if !worker.IsWhitelabel { // If whitelabel, the bot must be premium, so we don't need to do extra checks
-			premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, ticket.GuildId, true, worker.Token, worker.RateLimiter)
-			if err != nil {
-				sentry.Error(err)
-				return ""
-			}
-
-			if premiumTier == premium.None {
-				return ""
-			}
-		}
-
 		context, cancel := context.WithTimeout(context.Background(), time.Millisecond*1500)
 		defer cancel()
 
 		data, err := dbclient.Analytics.GetFirstResponseTimeStats(context, ticket.GuildId)
 		if err != nil {
-			sentry.Error(err)
+			fmt.Print(err)
 			return ""
 		}
 
@@ -480,7 +440,7 @@ var groupSubstitutions = []GroupSubstitutor{
 				if err == bloxlink.ErrUserNotFound {
 					return nil
 				} else {
-					sentry.Error(err)
+					fmt.Print(err)
 					return nil
 				}
 			}
@@ -560,7 +520,6 @@ func BuildCustomEmbed(
 	ticket database.Ticket,
 	customEmbed database.CustomEmbed,
 	fields []database.EmbedField,
-	branding bool,
 	// Only custom integration placeholders for now - prevent making duplicate requests
 	additionalPlaceholders map[string]string,
 ) *embed.Embed {
@@ -577,11 +536,7 @@ func BuildCustomEmbed(
 		Color:       int(customEmbed.Colour),
 	}
 
-	if branding {
-		e.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
-	} else if customEmbed.FooterText != nil {
-		e.SetFooter(*customEmbed.FooterText, utils.ValueOrZero(customEmbed.FooterIconUrl))
-	}
+	e.SetFooter("Tickets by jaDevelopment", "https://avatars.githubusercontent.com/u/142818403")
 
 	if customEmbed.ImageUrl != nil {
 		e.SetImage(*customEmbed.ImageUrl)

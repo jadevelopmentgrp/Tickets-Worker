@@ -1,15 +1,13 @@
 package tags
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/database"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/customisation"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
@@ -45,14 +43,9 @@ func (c TagAliasCommand) GetExecutor() interface{} {
 }
 
 func (c TagAliasCommand) Execute(ctx registry.CommandContext) {
-	if ctx.PremiumTier() < premium.Premium {
-		ctx.Reply(customisation.Red, i18n.TitlePremiumOnly, i18n.MessageTagAliasRequiresPremium)
-		return
-	}
-
 	ticket, err := dbclient.Client.Tickets.GetByChannelAndGuild(ctx, ctx.ChannelId(), ctx.GuildId())
 	if err != nil {
-		sentry.ErrorWithContext(err, ctx.ToErrorContext())
+		fmt.Print(err, ctx.ToErrorContext())
 		return
 	}
 
@@ -60,7 +53,7 @@ func (c TagAliasCommand) Execute(ctx registry.CommandContext) {
 	if ticket.GuildId != 0 {
 		go func() {
 			if err := dbclient.Client.Participants.Set(ctx, ctx.GuildId(), ticket.Id, ctx.UserId()); err != nil {
-				sentry.ErrorWithContext(err, ctx.ToErrorContext())
+				fmt.Print(err, ctx.ToErrorContext())
 			}
 		}()
 	}

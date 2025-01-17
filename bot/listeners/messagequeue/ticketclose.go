@@ -2,10 +2,10 @@ package messagequeue
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/TicketsBot/common/closerelay"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/closerelay"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
 	cmdcontext "github.com/jadevelopmentgrp/Tickets-Worker/bot/command/context"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/constants"
@@ -36,7 +36,7 @@ func ListenTicketClose() {
 			// Get the ticket struct
 			ticket, err := dbclient.Client.Tickets.Get(ctx, payload.TicketId, payload.GuildId)
 			if err != nil {
-				sentry.Error(err)
+				fmt.Print(err)
 				return
 			}
 
@@ -57,13 +57,13 @@ func ListenTicketClose() {
 			{
 				whiteLabelBotId, isWhitelabel, err := dbclient.Client.WhitelabelGuilds.GetBotByGuild(ctx, payload.GuildId)
 				if err != nil {
-					sentry.ErrorWithContext(err, errorContext)
+					fmt.Print(err, errorContext)
 				}
 
 				if isWhitelabel {
 					bot, err := dbclient.Client.Whitelabel.GetByBotId(ctx, whiteLabelBotId)
 					if err != nil {
-						sentry.ErrorWithContext(err, errorContext)
+						fmt.Print(err, errorContext)
 						return
 					}
 
@@ -86,24 +86,17 @@ func ListenTicketClose() {
 				RateLimiter:  nil,          // Use http-proxy ratelimit functionality
 			}
 
-			// Get whether the guild is premium for log archiver
-			premiumTier, err := utils.PremiumClient.GetTierByGuildId(ctx, payload.GuildId, true, token, workerCtx.RateLimiter)
-			if err != nil {
-				sentry.ErrorWithContext(err, errorContext)
-				return
-			}
-
 			// if ticket didnt open in the first place, no channel ID is assigned.
 			// we should close it here, or it wont get closed at all
 			if ticket.ChannelId == nil {
 				if err := dbclient.Client.Tickets.Close(ctx, payload.TicketId, payload.GuildId); err != nil {
-					sentry.ErrorWithContext(err, errorContext)
+					fmt.Print(err, errorContext)
 				}
 				return
 			}
 
 			// ticket.ChannelId cannot be nil
-			cc := cmdcontext.NewDashboardContext(ctx, workerCtx, ticket.GuildId, *ticket.ChannelId, payload.UserId, premiumTier)
+			cc := cmdcontext.NewDashboardContext(ctx, workerCtx, ticket.GuildId, *ticket.ChannelId, payload.UserId)
 			logic.CloseTicket(ctx, &cc, &payload.Reason, false)
 		}()
 	}

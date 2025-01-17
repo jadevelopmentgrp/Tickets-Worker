@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"github.com/TicketsBot/common/permission"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
@@ -58,7 +58,7 @@ func (SetupCommand) buildFields(ctx registry.CommandContext) []embed.EmbedField 
 
 	// should never happen
 	if err := group.Wait(); err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return nil
 	}
 

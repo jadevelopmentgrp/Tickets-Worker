@@ -2,8 +2,8 @@ package permissionwrapper
 
 import (
 	"errors"
+	"fmt"
 
-	"github.com/TicketsBot/common/sentry"
 	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/rxdn/gdl/objects/channel"
 	"github.com/rxdn/gdl/objects/guild"
@@ -35,7 +35,7 @@ func HasPermissionsChannel(ctx *worker.Context, guildId, userId, channelId uint6
 func HasPermissions(ctx *worker.Context, guildId, userId uint64, permissions ...permission.Permission) bool {
 	sum, err := getEffectivePermissions(ctx, guildId, userId)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return false
 	}
 
@@ -60,7 +60,7 @@ func getAllPermissionsChannel(ctx *worker.Context, guildId, userId, channelId ui
 
 	sum, err := getEffectivePermissionsChannel(ctx, guildId, userId, channelId)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return permissions
 	}
 
@@ -78,7 +78,7 @@ func getAllPermissions(ctx *worker.Context, guildId, userId uint64) []permission
 
 	sum, err := getEffectivePermissions(ctx, guildId, userId)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 		return permissions
 	}
 

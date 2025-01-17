@@ -2,10 +2,10 @@ package listeners
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/gateway/payloads/events"
 )
@@ -15,10 +15,7 @@ func OnMemberUpdate(worker *worker.Context, e events.GuildMemberUpdate) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3) // TODO: Propagate context
 	defer cancel()
 
-	span := sentry.StartSpan(ctx, "OnMemberUpdate")
-	defer span.Finish()
-
 	if err := utils.ToRetriever(worker).Cache().DeleteCachedPermissionLevel(ctx, e.GuildId, e.User.Id); err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 	}
 }

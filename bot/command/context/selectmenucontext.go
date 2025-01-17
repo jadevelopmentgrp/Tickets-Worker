@@ -5,10 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	permcache "github.com/TicketsBot/common/permission"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/TicketsBot/worker"
+	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
+	worker "github.com/jadevelopmentgrp/Tickets-Worker"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/registry"
@@ -32,7 +30,6 @@ type SelectMenuContext struct {
 	worker          *worker.Context
 	Interaction     interaction.MessageComponentInteraction
 	InteractionData interaction.SelectMenuInteractionData
-	premium         premium.PremiumTier
 	hasReplied      *atomic.Bool
 	responseChannel chan button.Response
 }
@@ -43,7 +40,6 @@ func NewSelectMenuContext(
 	ctx context.Context,
 	worker *worker.Context,
 	interaction interaction.MessageComponentInteraction,
-	premium premium.PremiumTier,
 	responseChannel chan button.Response,
 ) *SelectMenuContext {
 	c := SelectMenuContext{
@@ -52,7 +48,6 @@ func NewSelectMenuContext(
 		worker:          worker,
 		Interaction:     interaction,
 		InteractionData: interaction.Data.AsSelectMenu(),
-		premium:         premium,
 		hasReplied:      atomic.NewBool(false),
 		responseChannel: responseChannel,
 	}
@@ -87,10 +82,6 @@ func (c *SelectMenuContext) UserPermissionLevel(ctx context.Context) (permcache.
 	return permcache.GetPermissionLevel(ctx, utils.ToRetriever(c.worker), *c.Interaction.Member, c.GuildId())
 }
 
-func (c *SelectMenuContext) PremiumTier() premium.PremiumTier {
-	return c.premium
-}
-
 func (c *SelectMenuContext) IsInteraction() bool {
 	return true
 }
@@ -117,23 +108,6 @@ func (c *SelectMenuContext) ReplyWith(response command.MessageResponse) (msg mes
 	c.responseChannel <- button.ResponseMessage{
 		Data: response,
 	}
-
-	/*
-		if !hasReplied {
-			c.responseChannel <- button.ResponseMessage{
-				Data: response,
-			}
-		} else {
-			if time.Now().Sub(utils.SnowflakeToTime(c.interaction.Id)) > time.Minute*14 {
-				return
-			}
-
-			msg, err = rest.CreateFollowupMessage(context.Background(), c.Interaction.Token, c.worker.RateLimiter, c.worker.BotId, response.IntoWebhookBody())
-			if err != nil {
-				sentry.LogWithContext(err, c.ToErrorContext())
-			}
-		}
-	*/
 
 	return
 }
@@ -162,7 +136,7 @@ func (c *SelectMenuContext) InteractionMember() member.Member {
 	if c.Interaction.Member != nil {
 		return *c.Interaction.Member
 	} else {
-		sentry.ErrorWithContext(fmt.Errorf("SelectMenuContext.InteractionMember was called when Member is nil"), c.ToErrorContext())
+		fmt.Print(fmt.Errorf("SelectMenuContext.InteractionMember was called when Member is nil"), c.ToErrorContext())
 		return member.Member{}
 	}
 }
@@ -177,13 +151,13 @@ func (c *SelectMenuContext) InteractionUser() user.User {
 	} else if c.Interaction.User != nil {
 		return *c.Interaction.User
 	} else { // Infallible
-		sentry.ErrorWithContext(fmt.Errorf("infallible: SelectMenuContext.InteractionUser was called when User is nil"), c.ToErrorContext())
+		fmt.Print(fmt.Errorf("infallible: SelectMenuContext.InteractionUser was called when User is nil"), c.ToErrorContext())
 		return user.User{}
 	}
 }
 
 func (c *SelectMenuContext) IntoPanelContext() PanelContext {
-	return NewPanelContext(c.Context, c.worker, c.GuildId(), c.ChannelId(), c.InteractionUser().Id, c.PremiumTier())
+	return NewPanelContext(c.Context, c.worker, c.GuildId(), c.ChannelId(), c.InteractionUser().Id)
 }
 
 func (c *SelectMenuContext) IsBlacklisted(ctx context.Context) (bool, error) {

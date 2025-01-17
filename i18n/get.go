@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/TicketsBot/common/sentry"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
-	"github.com/jackc/pgx/v4"
 	"io/ioutil"
 	"strings"
+
+	"github.com/jackc/pgx/v4"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
+	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 )
 
 func LoadMessages() {
@@ -74,7 +74,7 @@ func GetMessageFromGuild(guildId uint64, id MessageId, format ...interface{}) st
 	// TODO: Propagate context
 	activeLanguage, err := dbclient.Client.ActiveLanguage.Get(context.Background(), guildId)
 	if err != nil {
-		sentry.Error(err)
+		fmt.Print(err)
 	}
 
 	if activeLanguage != "" {
@@ -85,7 +85,7 @@ func GetMessageFromGuild(guildId uint64, id MessageId, format ...interface{}) st
 	preferredLocale, err := getPreferredLocale(guildId)
 	if err != nil {
 		if err != pgx.ErrNoRows {
-			sentry.Error(err)
+			fmt.Print(err)
 		}
 
 		return GetMessage(LocaleEnglish, id, format...)

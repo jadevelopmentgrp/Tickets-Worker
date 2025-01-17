@@ -11,12 +11,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/profiler"
-	"github.com/TicketsBot/archiverclient"
-	"github.com/TicketsBot/common/model"
-	"github.com/TicketsBot/common/observability"
-	"github.com/TicketsBot/common/premium"
-	"github.com/TicketsBot/common/rpc"
-	"github.com/TicketsBot/common/sentry"
+	archiverclient "github.com/jadevelopmentgrp/Tickets-Archiver-Client"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/model"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/observability"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/premium"
+	"github.com/jadevelopmentgrp/Tickets-Utilities/rpc"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
@@ -53,29 +52,9 @@ func main() {
 		}
 	}
 
-	logger, err := observability.Configure(nil, config.Conf.JsonLogs, config.Conf.LogLevel)
+	logger, err := observability.Configure(config.Conf.JsonLogs, config.Conf.LogLevel)
 	if err != nil {
 		panic(err)
-	}
-
-	if len(config.Conf.DebugMode) == 0 {
-		logger.Info("Connecting to sentry")
-		if err := sentry.Initialise(sentry.Options{
-			Dsn:              config.Conf.Sentry.Dsn,
-			Debug:            config.Conf.DebugMode != "",
-			SampleRate:       config.Conf.Sentry.SampleRate,
-			EnableTracing:    config.Conf.Sentry.UseTracing,
-			TracesSampleRate: config.Conf.Sentry.TracingSampleRate,
-		}); err != nil {
-			logger.Error("Failed to connect to sentry", zap.Error(err))
-		} else {
-			logger.Info(
-				"Connected to sentry",
-				zap.Float64("sample_rate", config.Conf.Sentry.SampleRate),
-				zap.Bool("tracing", config.Conf.Sentry.UseTracing),
-				zap.Float64("tracing_sample_rate", config.Conf.Sentry.TracingSampleRate),
-			)
-		}
 	}
 
 	logger.Info("Connecting to Redis")
