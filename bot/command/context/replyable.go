@@ -127,7 +127,7 @@ func (r *Replyable) HandleError(err error) {
 	defer cancel()
 
 	permLevel, resolveError := r.ctx.UserPermissionLevel(ctx)
-	showInviteLink := !r.ctx.Worker().IsWhitelabel && (resolveError != nil || permLevel > permcache.Everyone)
+	showInviteLink := (resolveError != nil || permLevel > permcache.Everyone)
 
 	res := r.buildErrorResponse(err, showInviteLink)
 	_, _ = r.ctx.ReplyWith(res)
@@ -145,7 +145,7 @@ func (r *Replyable) HandleWarning(err error) {
 
 	// We should show the invite link if the user is staff (or if we failed to resolve their permission level, show it)
 	permLevel, resolveError := r.ctx.UserPermissionLevel(ctx)
-	showInviteLink := !r.ctx.Worker().IsWhitelabel && (resolveError != nil || permLevel > permcache.Everyone)
+	showInviteLink := (resolveError != nil || permLevel > permcache.Everyone)
 
 	res := r.buildErrorResponse(err, showInviteLink)
 	_, _ = r.ctx.ReplyWith(res)
@@ -156,11 +156,7 @@ func (r *Replyable) GetMessage(messageId i18n.MessageId, format ...interface{}) 
 }
 
 func (r *Replyable) SelectValidEmoji(customEmoji customisation.CustomEmoji, fallback string) *emoji.Emoji {
-	if r.ctx.Worker().IsWhitelabel {
-		return utils.BuildEmoji(fallback) // TODO: Check whitelabel_guilds table for emojis server
-	} else {
-		return customEmoji.BuildEmoji()
-	}
+	return utils.BuildEmoji(fallback)
 }
 
 func (r *Replyable) buildErrorResponse(err error, includeInviteLink bool) command.MessageResponse {

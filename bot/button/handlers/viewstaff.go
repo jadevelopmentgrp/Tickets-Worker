@@ -2,6 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command"
@@ -10,10 +15,6 @@ import (
 	"github.com/rxdn/gdl/objects/channel/embed"
 	"github.com/rxdn/gdl/objects/guild/emoji"
 	"github.com/rxdn/gdl/objects/interaction/component"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type ViewStaffHandler struct{}
@@ -77,9 +78,6 @@ func (h *ViewStaffHandler) Execute(ctx *context.ButtonContext) {
 		})
 	} else {
 		components := ctx.Interaction.Message.Components
-		if len(components) == 0 { // Impossible unless whitelabel
-			return
-		}
 
 		actionRow, ok := components[0].ComponentData.(component.ActionRow)
 		if !ok {

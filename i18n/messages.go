@@ -20,7 +20,6 @@ var (
 	Confirm   MessageId = "generic.confirm"
 	Website   MessageId = "generic.website"
 
-	TitlePremiumOnly       MessageId = "generic.title.premium_only"
 	TitleAbout             MessageId = "generic.title.about"
 	TitleVote              MessageId = "generic.title.vote"
 	TitleTags              MessageId = "generic.title.tags"
@@ -38,7 +37,6 @@ var (
 	TitleRemoveSupport     MessageId = "generic.title.remove_support"
 	TitleLanguage          MessageId = "generic.title.language"
 	TitleSetup             MessageId = "generic.title.setup"
-	TitlePremium           MessageId = "generic.title.premium"
 	TitlePanel             MessageId = "generic.title.panel"
 	TitleRemove            MessageId = "generic.title.remove"
 	TitleRename            MessageId = "generic.title.rename"
@@ -52,8 +50,7 @@ var (
 	TitleJumpToTop         MessageId = "generic.title.jump_to_top"
 	TitleReopened          MessageId = "generic.title.reopened"
 
-	MessageAbout   MessageId = "commands.about"
-	MessagePremium MessageId = "commands.premium"
+	MessageAbout MessageId = "commands.about"
 
 	MessageVote                      MessageId = "commands.vote"
 	MessageVoteWithCreditsSingular   MessageId = "commands.vote.with_credits.singular"
@@ -85,9 +82,8 @@ var (
 
 	MessageTagList MessageId = "commands.tags.list"
 
-	MessageTagInvalidArguments     MessageId = "commands.tags.get.invalid_arguments"
-	MessageTagInvalidTag           MessageId = "commands.tags.get.invalid_tag"
-	MessageTagAliasRequiresPremium MessageId = "commands.tags.get.requires_premium"
+	MessageTagInvalidArguments MessageId = "commands.tags.get.invalid_arguments"
+	MessageTagInvalidTag       MessageId = "commands.tags.get.invalid_tag"
 
 	MessageOpenThreadAnnouncementChannel MessageId = "open.thread_in_announcement_channel"
 	MessageOpenRatelimited               MessageId = "open.ratelimited"
@@ -128,35 +124,6 @@ var (
 	MessageClaimThread       MessageId = "commands.claim.thread"
 
 	MessagePanel MessageId = "commands.panel"
-
-	MessagePremiumAbout                          MessageId = "commands.premium.about"
-	MessageInvalidPremiumKey                     MessageId = "commands.premium.invalid_key"
-	MessagePremiumMethodSelector                 MessageId = "commands.premium.selector.description"
-	MessagePremiumMethodSelectorKey              MessageId = "commands.premium.selector.key.description"
-	MessagePremiumMethodSelectorPatreon          MessageId = "commands.premium.selector.patreon.description"
-	MessagePremiumMethodSelectorDiscord          MessageId = "commands.premium.selector.discord.description"
-	MessagePremiumKey                            MessageId = "commands.premium.key"
-	MessagePremiumGiveawayKey                    MessageId = "commands.premium.giveaway_key"
-	MessagePremiumActivateKey                    MessageId = "commands.premium.activate_key"
-	MessagePremiumUseKeyAnyway                   MessageId = "commands.premium.use_key_anyway"
-	MessagePremiumAlreadyPurchasedTitle          MessageId = "commands.premium.already_purchased_title"
-	MessagePremiumAlreadyPurchasedDescription    MessageId = "commands.premium.already_purchased_description"
-	MessagePremiumOpenForm                       MessageId = "commands.premium.open_form"
-	MessagePremiumOpenFormDescription            MessageId = "commands.premium.open_form_description"
-	MessagePremiumCheckAgain                     MessageId = "commands.premium.check_again"
-	MessagePremiumOpenServerSelector             MessageId = "commands.premium.open_server_selector"
-	MessagePremiumChecking                       MessageId = "commands.premium.checking"
-	MessagePremiumPleaseWait                     MessageId = "commands.premium.please_wait"
-	MessagePremiumNoSubscription                 MessageId = "commands.premium.no_subscription"
-	MessagePremiumDiscordNoSubscription          MessageId = "commands.premium.discord.no_subscription"
-	MessagePremiumSubscriptionFound              MessageId = "commands.premium.subscription_found"
-	MessagePremiumSubscriptionFoundContent       MessageId = "commands.premium.subscription_found_content"
-	MessagePremiumSubscriptionFoundContentModern MessageId = "commands.premium.subscription_found_content_modern"
-	MessagePremiumLinkPatreonAccount             MessageId = "commands.premium.link_patreon_account"
-	MessagePremiumLinkAlreadyActivated           MessageId = "commands.premium.already_activated"
-	MessagePremiumLinkAlreadyActivatedWhitelabel MessageId = "commands.premium.already_activated_whitelabel"
-	MessagePremiumSuccess                        MessageId = "commands.premium.success"
-	MessagePremiumSuccessAfterCheck              MessageId = "commands.premium.success_after_check"
 
 	MessageRemoveAdminNoMembers MessageId = "commands.removeadmin.no_members"
 	MessageRemoveAdminSuccess   MessageId = "commands.removeadmin.success"
@@ -236,9 +203,8 @@ var (
 	MessageAlreadyJoinedThread    MessageId = "button.join_thread.already_joined"
 	MessageJoinThreadSuccess      MessageId = "button.join_thread.success"
 
-	HelpAdminCheckPremium MessageId = "help.admin.check_premium"
-	HelpAdminBlacklist    MessageId = "help.admin.blacklist"
-	HelpAdminUnblacklist  MessageId = "help.admin.unblacklist"
+	HelpAdminBlacklist   MessageId = "help.admin.blacklist"
+	HelpAdminUnblacklist MessageId = "help.admin.unblacklist"
 
 	SetupAutoRolesSuccess             MessageId = "setup.auto.roles.success"
 	SetupAutoRolesFailure             MessageId = "setup.auto.roles.failure"
@@ -271,7 +237,6 @@ var (
 	MessageButtonDMOnly    MessageId = "button.dms_only"
 
 	HelpAdmin              MessageId = "help.admin"
-	HelpAdminGenPremium    MessageId = "help.admin.generate_premium"
 	HelpAdminGetOwner      MessageId = "help.admin.get_owner"
 	HelpAbout              MessageId = "help.about"
 	HelpAutoClose          MessageId = "help.autoclose"
@@ -282,7 +247,6 @@ var (
 	HelpAddSupport         MessageId = "help.addsupport"
 	HelpBlacklist          MessageId = "help.blacklist"
 	HelpPanel              MessageId = "help.panel"
-	HelpPremium            MessageId = "help.premium"
 	HelpRemoveSupport      MessageId = "help.removesupport"
 	HelpSetup              MessageId = "help.setup"
 	HelpViewStaff          MessageId = "help.viewstaff"

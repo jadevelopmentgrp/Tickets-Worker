@@ -117,7 +117,7 @@ func executeCommand(
 		ctx, cancel := context.WithTimeout(ctx, properties.Timeout)
 		defer cancel()
 
-		interactionContext := cmdcontext.NewSlashCommandContext(ctx, worker, data, 0, responseCh)
+		interactionContext := cmdcontext.NewSlashCommandContext(ctx, worker, data, responseCh)
 
 		// Check if the guild is globally blacklisted
 		if blacklist.IsGuildBlacklisted(data.GuildId.Value) {

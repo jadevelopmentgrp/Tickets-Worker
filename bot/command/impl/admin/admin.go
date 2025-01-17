@@ -21,8 +21,6 @@ func (AdminCommand) Properties() registry.Properties {
 		Children: []registry.Command{
 			AdminBlacklistCommand{},
 			AdminCheckBlacklistCommand{},
-			AdminCheckPremiumCommand{},
-			AdminGenPremiumCommand{},
 			AdminGetOwnerCommand{},
 			AdminListGuildEntitlementsCommand{},
 			AdminListUserEntitlementsCommand{},

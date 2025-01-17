@@ -10,7 +10,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/dbclient"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/errorcontext"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	"github.com/rxdn/gdl/gateway/payloads/events"
 )
 

@@ -44,64 +44,9 @@ func callCommand(
         }
 
         v.Execute(ctx, arg0)
-    case admin.AdminCheckPremiumCommand:
-        var arg0 string
-
-        opt0, ok0 := findOption(cmd.Properties().Arguments[0], options)
-        if !ok0 {
-            return ErrArgumentNotFound
-        } else { 
-            argValue, ok := opt0.Value.(string)
-            if !ok {
-                return fmt.Errorf("option %s was not a string", opt0.Name)
-            }
-            arg0 = argValue
-        }
-
-        v.Execute(ctx, arg0)
     case admin.AdminCommand:
 
         v.Execute(ctx)
-    case admin.AdminGenPremiumCommand:
-        var arg0 string
-
-        opt0, ok0 := findOption(cmd.Properties().Arguments[0], options)
-        if !ok0 {
-            return ErrArgumentNotFound
-        } else { 
-            argValue, ok := opt0.Value.(string)
-            if !ok {
-                return fmt.Errorf("option %s was not a string", opt0.Name)
-            }
-            arg0 = argValue
-        }
-        var arg1 int
-
-        opt1, ok1 := findOption(cmd.Properties().Arguments[1], options)
-        if !ok1 {
-            return ErrArgumentNotFound
-        } else { 
-            argValue, ok := opt1.Value.(float64)
-            if !ok {
-                return fmt.Errorf("option %s was not a float64", opt1.Name)
-            }
-            arg1 = int(argValue)
-        }
-        var arg2 *int
-
-        opt2, ok2 := findOption(cmd.Properties().Arguments[2], options)
-        if !ok2 {
-            arg2 = nil
-        } else { 
-            argValue, ok := opt2.Value.(float64)
-            if !ok {
-                return fmt.Errorf("option %s was not a float64", opt2.Name)
-            }
-            tmp := int(argValue)
-            arg2 = &tmp
-        }
-
-        v.Execute(ctx, arg0, arg1, arg2)
     case admin.AdminGetOwnerCommand:
         var arg0 string
 

@@ -13,7 +13,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 )
 
 func ListenCloseRequestTimer() {

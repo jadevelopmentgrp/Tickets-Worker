@@ -14,6 +14,7 @@ require (
 	github.com/jadevelopmentgrp/Tickets-Analytics v1.0.0
 	github.com/jadevelopmentgrp/Tickets-Archiver-Client v1.0.0
 	github.com/jadevelopmentgrp/Tickets-Database v1.0.3
+	github.com/jadevelopmentgrp/Tickets-Utilities v1.0.0
 	github.com/jedib0t/go-pretty/v6 v6.5.6
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
@@ -79,9 +80,7 @@ require (
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	github.com/jadevelopmentgrp/Tickets-Archiver v1.0.3 // indirect
-	github.com/jadevelopmentgrp/Tickets-Utilities v1.0.0 // indirect
-	github.com/juju/ratelimit v1.0.1 // indirect
+	github.com/jadevelopmentgrp/Tickets-Archiver v1.0.3 // indirect; indirect	github.com/juju/ratelimit v1.0.1 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -132,4 +131,11 @@ require (
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
+)
+
+require (
+	github.com/juju/ratelimit v1.0.1 // indirect
+	github.com/panjf2000/ants/v2 v2.10.0 // indirect
+	github.com/twmb/franz-go v1.18.0 // indirect
+	github.com/twmb/franz-go/pkg/kmsg v1.9.0 // indirect
 )

@@ -3,6 +3,11 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	permcache "github.com/jadevelopmentgrp/Tickets-Utilities/permission"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/button/registry/matcher"
@@ -17,10 +22,6 @@ import (
 	"github.com/rxdn/gdl/permission"
 	"github.com/rxdn/gdl/rest"
 	"github.com/rxdn/gdl/rest/request"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type AddAdminHandler struct{}
@@ -90,11 +91,6 @@ func (h *AddAdminHandler) Execute(ctx *context.ButtonContext) {
 		}
 
 		if err := utils.ToRetriever(ctx.Worker()).Cache().SetCachedPermissionLevel(ctx, ctx.GuildId(), id, permcache.Admin); err != nil {
-			ctx.HandleError(err)
-			return
-		}
-
-		if err := utils.PremiumClient.DeleteCachedTier(ctx, ctx.GuildId()); err != nil {
 			ctx.HandleError(err)
 			return
 		}

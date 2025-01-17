@@ -60,10 +60,7 @@ func (m *ComponentInteractionManager) RegisterCommands() {
 		new(handlers.JoinThreadHandler),
 		new(handlers.OpenSurveyHandler),
 		new(handlers.PanelHandler),
-		new(handlers.PremiumCheckAgain),
-		new(handlers.PremiumKeyButtonHandler),
 		new(handlers.RateHandler),
-		new(handlers.RedeemVoteCreditsHandler),
 		new(handlers.ViewStaffHandler),
 		new(handlers.ViewSurveyHandler),
 	)
@@ -71,14 +68,12 @@ func (m *ComponentInteractionManager) RegisterCommands() {
 	m.selectRegistry = append(m.selectRegistry,
 		new(handlers.LanguageSelectorHandler),
 		new(handlers.MultiPanelHandler),
-		new(handlers.PremiumKeyOpenHandler),
 	)
 
 	m.modalRegistry = append(m.modalRegistry,
 		new(handlers.FormHandler),
 		new(handlers.CloseWithReasonSubmitHandler),
 		new(handlers.ExitSurveySubmitHandler),
-		new(handlers.PremiumKeySubmitHandler),
 	)
 
 	for _, handler := range m.buttonRegistry {

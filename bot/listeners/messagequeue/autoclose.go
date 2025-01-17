@@ -12,7 +12,6 @@ import (
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/logic"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/metrics/statsd"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/redis"
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/utils"
 	gdlUtils "github.com/rxdn/gdl/utils"
 )
 
@@ -48,7 +47,7 @@ func ListenAutoClose() {
 			if ticket.ChannelId == nil {
 				return
 			}
-			
+
 			cc := cmdcontext.NewAutoCloseContext(ctx, worker, ticket.GuildId, *ticket.ChannelId, worker.BotId)
 			logic.CloseTicket(ctx, cc, gdlUtils.StrPtr(AutoCloseReason), true)
 		}()

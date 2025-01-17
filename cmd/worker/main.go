@@ -12,9 +12,7 @@ import (
 
 	"cloud.google.com/go/profiler"
 	archiverclient "github.com/jadevelopmentgrp/Tickets-Archiver-Client"
-	"github.com/jadevelopmentgrp/Tickets-Utilities/model"
 	"github.com/jadevelopmentgrp/Tickets-Utilities/observability"
-	"github.com/jadevelopmentgrp/Tickets-Utilities/premium"
 	"github.com/jadevelopmentgrp/Tickets-Utilities/rpc"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/blacklist"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/cache"
@@ -95,14 +93,6 @@ func main() {
 	}
 
 	logger.Info("Configuring microservice clients (no I/O)")
-	if config.Conf.DebugMode == "" {
-		utils.PremiumClient = premium.NewPremiumLookupClient(redis.Client, &pgCache, dbclient.Client)
-	} else {
-		c := premium.NewMockLookupClient(premium.Whitelabel, model.EntitlementSourcePatreon)
-		utils.PremiumClient = &c
-
-		request.Client.Timeout = time.Second * 10
-	}
 
 	utils.ArchiverClient = archiverclient.NewArchiverClient(
 		archiverclient.NewProxyRetriever(config.Conf.Archiver.Url),
