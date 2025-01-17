@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	database "github.com/jadevelopmentgrp/Tickets-Database"
 	"github.com/jadevelopmentgrp/Tickets-Worker/config"
 	"go.uber.org/zap"
 )
@@ -28,7 +28,6 @@ func Connect(logger *zap.Logger) {
 		return
 	}
 
-	// TODO: Sentry
 	cfg.ConnConfig.LogLevel = pgx.LogLevelWarn
 	cfg.ConnConfig.Logger = NewLogAdapter(logger)
 

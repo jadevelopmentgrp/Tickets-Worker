@@ -95,13 +95,6 @@ type (
 			Prefix  string `env:"PREFIX"`
 		} `envPrefix:"WORKER_STATSD_"`
 
-		Sentry struct {
-			Dsn               string  `env:"DSN"`
-			SampleRate        float64 `env:"SAMPLE_RATE" envDefault:"1.0"`
-			UseTracing        bool    `env:"TRACING_ENABLED"`
-			TracingSampleRate float64 `env:"TRACING_SAMPLE_RATE"`
-		} `envPrefix:"WORKER_SENTRY_"`
-
 		CloudProfiler struct {
 			Enabled   bool   `env:"ENABLED" envDefault:"false"`
 			ProjectId string `env:"PROJECT_ID"`

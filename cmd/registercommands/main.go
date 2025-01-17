@@ -8,7 +8,6 @@ import (
 
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/manager"
 	"github.com/jadevelopmentgrp/Tickets-Worker/i18n"
-	"github.com/rxdn/gdl/objects/interaction"
 	"github.com/rxdn/gdl/rest"
 )
 
@@ -32,7 +31,7 @@ func main() {
 	commandManager := new(manager.CommandManager)
 	commandManager.RegisterCommands()
 
-	data, adminCommands := commandManager.BuildCreatePayload(false, AdminCommandGuildId)
+	data := commandManager.BuildCreatePayload()
 
 	var err error
 	if *GuildId == 0 {
@@ -43,33 +42,6 @@ func main() {
 
 	if err != nil {
 		panic(err)
-	}
-
-	if AdminCommandGuildId != nil && *AdminCommandGuildId != 0 {
-		if MergeGuildCommands != nil && *MergeGuildCommands {
-			cmds := must(rest.GetGuildCommands(context.Background(), *Token, nil, *ApplicationId, *AdminCommandGuildId))
-			for _, cmd := range cmds {
-				var found bool
-				for _, newCmd := range adminCommands {
-					if cmd.Name == newCmd.Name {
-						found = true
-						break
-					}
-				}
-
-				if !found {
-					adminCommands = append(adminCommands, rest.CreateCommandData{
-						Id:          cmd.Id,
-						Name:        cmd.Name,
-						Description: cmd.Description,
-						Options:     cmd.Options,
-						Type:        interaction.ApplicationCommandTypeChatInput,
-					})
-				}
-			}
-		}
-
-		must(rest.ModifyGuildCommands(context.Background(), *Token, nil, *ApplicationId, *AdminCommandGuildId, adminCommands))
 	}
 
 	cmds := must(rest.GetGlobalCommands(context.Background(), *Token, nil, *ApplicationId))

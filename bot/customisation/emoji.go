@@ -2,6 +2,7 @@ package customisation
 
 import (
 	"fmt"
+
 	"github.com/rxdn/gdl/objects"
 	"github.com/rxdn/gdl/objects/guild/emoji"
 )
@@ -55,7 +56,7 @@ var (
 	//EmojiTime       = NewCustomEmoji("time", 974006684622159952, false)
 )
 
-// PrefixWithEmoji Useful for whitelabel bots
+// PrefixWithEmoji
 func PrefixWithEmoji(s string, emoji CustomEmoji, includeEmoji bool) string {
 	if includeEmoji {
 		return fmt.Sprintf("%s %s", emoji, s)

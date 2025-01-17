@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/admin"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/general"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/settings"
 	"github.com/jadevelopmentgrp/Tickets-Worker/bot/command/impl/settings/setup"
@@ -26,8 +25,6 @@ func (cm *CommandManager) RegisterCommands() {
 	cm.registry = make(map[string]registry.Command)
 
 	cm.registry["help"] = general.HelpCommand{Registry: cm.registry}
-
-	cm.registry["admin"] = admin.AdminCommand{}
 
 	cm.registry["about"] = general.AboutCommand{}
 	cm.registry["invite"] = general.InviteCommand{}
@@ -74,7 +71,7 @@ func (cm *CommandManager) RunSetupFuncs() {
 	}
 }
 
-func (cm *CommandManager) BuildCreatePayload(isWhitelabel bool, adminCommandGuildId *uint64) (data []rest.CreateCommandData, adminCommands []rest.CreateCommandData) {
+func (cm *CommandManager) BuildCreatePayload() (data []rest.CreateCommandData) {
 	for _, cmd := range cm.GetCommands() {
 		properties := cmd.Properties()
 
@@ -89,10 +86,6 @@ func (cm *CommandManager) BuildCreatePayload(isWhitelabel bool, adminCommandGuil
 			description = option.Description
 		}
 
-		if properties.MainBotOnly && isWhitelabel {
-			continue
-		}
-
 		cmdData := rest.CreateCommandData{
 			Name:        option.Name,
 			Description: description,
@@ -100,14 +93,10 @@ func (cm *CommandManager) BuildCreatePayload(isWhitelabel bool, adminCommandGuil
 			Type:        properties.Type,
 		}
 
-		if properties.HelperOnly || properties.AdminOnly {
-			adminCommands = append(adminCommands, cmdData)
-		} else {
-			data = append(data, cmdData)
-		}
+		data = append(data, cmdData)
 	}
 
-	return data, adminCommands
+	return data
 }
 
 func buildOption(cmd registry.Command) interaction.ApplicationCommandOption {

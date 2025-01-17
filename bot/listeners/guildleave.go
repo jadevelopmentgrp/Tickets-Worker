@@ -23,12 +23,6 @@ func OnGuildLeave(worker *worker.Context, e events.GuildDelete) {
 	if e.Unavailable == nil {
 		statsd.Client.IncrementKey(statsd.KeyLeaves)
 
-		if worker.IsWhitelabel {
-			if err := dbclient.Client.WhitelabelGuilds.Delete(ctx, worker.BotId, e.Guild.Id); err != nil {
-				fmt.Print(err)
-			}
-		}
-
 		// Exclude from autoclose
 		if err := dbclient.Client.AutoCloseExclude.ExcludeAll(ctx, e.Guild.Id); err != nil {
 			fmt.Print(err)

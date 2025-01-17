@@ -39,7 +39,6 @@ func Connect(logger *zap.Logger) (client cache.PgCache, err error) {
 		zap.Int("threads", config.Conf.Cache.Threads),
 	)
 
-	// TODO: Sentry
 	cfg.ConnConfig.LogLevel = pgx.LogLevelWarn
 	cfg.ConnConfig.Logger = logrusadapter.NewLogger(logrus.New())
 	cfg.ConnConfig.PreferSimpleProtocol = true

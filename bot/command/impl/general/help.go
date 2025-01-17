@@ -70,11 +70,6 @@ func (c HelpCommand) Execute(ctx registry.CommandContext) {
 			continue
 		}
 
-		// check whitelabel hidden cmds
-		if properties.MainBotOnly && ctx.Worker().IsWhitelabel {
-			continue
-		}
-
 		if permLevel >= cmd.Properties().PermissionLevel { // only send commands the user has permissions for
 			var current []registry.Command
 			if commands, ok := commandCategories.Get(properties.Category); ok {
