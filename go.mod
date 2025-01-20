@@ -12,9 +12,9 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jadevelopmentgrp/Tickets-Analytics v1.0.0
-	github.com/jadevelopmentgrp/Tickets-Archiver-Client v1.0.0
-	github.com/jadevelopmentgrp/Tickets-Database v1.0.3
-	github.com/jadevelopmentgrp/Tickets-Utilities v1.0.0
+	github.com/jadevelopmentgrp/Tickets-Archiver-Client v1.0.1
+	github.com/jadevelopmentgrp/Tickets-Database v1.0.5
+	github.com/jadevelopmentgrp/Tickets-Utilities v1.0.2
 	github.com/jedib0t/go-pretty/v6 v6.5.6
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
