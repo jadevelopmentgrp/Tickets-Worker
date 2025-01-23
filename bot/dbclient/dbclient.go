@@ -13,7 +13,12 @@ import (
 
 var Client *database.Database
 
-func Connect(logger *zap.Logger) {
+func Connect() {
+	logger := zap.NewExample()
+	defer logger.Sync()
+
+	logger.With(zap.String("service", "database"))
+
 	cfg, err := pgxpool.ParseConfig(fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?pool_max_conns=%d",
 		config.Conf.Database.Username,
