@@ -33,13 +33,7 @@ func callCommand(
     case general.HelpCommand:
 
         v.Execute(ctx)
-    case general.InviteCommand:
-
-        v.Execute(ctx)
     case general.JumpToTopCommand:
-
-        v.Execute(ctx)
-    case general.VoteCommand:
 
         v.Execute(ctx)
     case settings.AddAdminCommand:
